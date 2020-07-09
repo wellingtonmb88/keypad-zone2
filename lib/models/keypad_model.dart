@@ -1,27 +1,25 @@
 class Keypad {
   final String id;
   final String name;
-  final String ip;
-  final String mDns;
   final List<Zones> zones;
 
-  Keypad(this.id, this.name, this.ip, this.mDns, this.zones);
+  Keypad(this.id, this.name, this.zones);
 }
 
 class Zones {
   final String zoneId;
   final String zoneName;
-  final List<Sources> sources;
+  final List<Buttons> buttons;
 
-  Zones(this.zoneId, this.zoneName, this.sources);
+  Zones(this.zoneId, this.zoneName, this.buttons);
 }
 
-class Sources {
-  final String sourceId;
-  final String sourceName;
+class Buttons {
+  final String buttonId;
+  final String buttonName;
   final List<Commands> commands;
 
-  Sources(this.sourceId, this.sourceName, this.commands);
+  Buttons(this.buttonId, this.buttonName, this.commands);
 }
 
 class Commands {

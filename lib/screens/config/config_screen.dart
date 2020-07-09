@@ -1,38 +1,35 @@
+import 'package:automation/bloc/app_bloc.dart';
 import 'package:automation/models/keypad_model.dart';
+import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/material.dart';
-import 'config_bloc.dart';
 
 class ConfigScreen extends StatefulWidget {
-  List<Keypad> keypads;
-
-  ConfigScreen(this.keypads);
+  ConfigScreen();
 
   @override
   _ConfigScreenState createState() => _ConfigScreenState();
 }
 
 class _ConfigScreenState extends State<ConfigScreen> {
-  ConfigBloc bloc = ConfigBloc();
-  List<Keypad> keypads;
-  Keypad keypad;
+  String keypad;
   Zones zone;
-  Sources source;
-  String zoneName;
-  String sourceName;
-  String commandName;
+  Buttons button;
+  Commands command;
 
   @override
   void initState() {
     super.initState();
 
-    keypads = widget.keypads;
-    keypad = keypads.length > 0 ? keypads[0] : null;
-    zone = keypad != null && keypad.zones.length > 0 ? keypad.zones[0] : null;
-    source = zone != null && zone.sources.length > 0 ? zone.sources[0] : null;
+    keypad = null;
+    zone = null;
+    button = null;
+    command = null;
   }
 
   @override
   Widget build(BuildContext context) {
+    final AppBloc bloc = BlocProvider.getBloc<AppBloc>();
+
     return Scaffold(
         appBar: AppBar(
           title: Text('Config KeyPad'),
@@ -41,147 +38,133 @@ class _ConfigScreenState extends State<ConfigScreen> {
           child: Column(
             children: <Widget>[
               Container(
-                child: keypads.length > 0
-                    ? Text('Select a KeyPad')
-                    : Text('No KeyPads added.'),
-                alignment: Alignment.center,
-                margin: EdgeInsets.only(top: 20.0),
-              ),
-              Container(
-                  child: keypads.length > 0
-                      ? DropdownButton<Keypad>(
-                          value: keypad,
-                          onChanged: (Keypad newKeypad) {
-                            setState(() {
-                              keypad = newKeypad;
-                              zone = newKeypad.zones.length > 0
-                                  ? newKeypad.zones[0]
-                                  : null;
-                            });
-                          },
-                          items: keypads
-                              .map<DropdownMenuItem<Keypad>>((Keypad keypad) {
-                            return DropdownMenuItem<Keypad>(
-                              value: keypad,
-                              child: Text(keypad.name),
-                            );
-                          }).toList(),
-                        )
-                      : Text('Add one KeyPad first.')),
-              Container(
-                child: Center(
-                  child: TextField(
-                    decoration: InputDecoration(labelText: 'Enter Zone Name'),
-                    onChanged: (value) {
-                      setState(() {
-                        zoneName = value;
-                      });
-                    },
+                  child: Text(
+                    'KeyPad Name',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
+                  alignment: Alignment.center,
+                  margin: EdgeInsets.only(top: 50.0)),
+              Container(
+                child: TextField(
+                  decoration: InputDecoration(
+                      border: InputBorder.none, hintText: 'Enter KeyPad Name'),
+                  onChanged: (value) {
+                    setState(() {
+                      keypad = value;
+                    });
+                  },
                 ),
                 margin: EdgeInsets.only(top: 20.0, right: 20.0, left: 20.0),
               ),
               Container(
-                child: RaisedButton(
-                  child: Text(
-                    'Add Zone',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  color: Colors.blue,
-                  onPressed: () {
-                    bloc.addZone(keypad, zoneName);
-                  },
-                ),
-                margin: EdgeInsets.only(top: 10.0, right: 20.0, left: 20.0),
-                width: double.infinity,
-              ),
-              Container(
-                child: keypad != null && keypad.zones.length > 0
-                    ? Text('Select a Zone')
-                    : Text('No Zones added.'),
+                child: Text('Zone Name',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 alignment: Alignment.center,
-                margin: EdgeInsets.only(top: 40.0),
+                margin: EdgeInsets.only(top: 60.0),
               ),
               Container(
-                  child: keypad != null && keypad.zones.length > 0
-                      ? DropdownButton<Zones>(
-                          value: zone,
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: TextField(
+                        decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Enter Zone Name'),
+                      ),
+                    ),
+                    Container(
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<Zones>(
+                          value: bloc.zones[0],
                           onChanged: (Zones newZone) {
                             setState(() {
                               zone = newZone;
                             });
                           },
-                          items: keypad.zones
+                          items: bloc.zones
                               .map<DropdownMenuItem<Zones>>((Zones zone) {
                             return DropdownMenuItem<Zones>(
                               value: zone,
                               child: Text(zone.zoneName),
                             );
                           }).toList(),
-                        )
-                      : Text('Add one Zone first.')),
-              Container(
-                child: Center(
-                  child: TextField(
-                    decoration: InputDecoration(labelText: 'Enter Source Name'),
-                    onChanged: (value) {
-                      setState(() {
-                        sourceName = value;
-                      });
-                    },
-                  ),
+                        ),
+                      ),
+                      margin: EdgeInsets.only(left: 20.0),
+                    )
+                  ],
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                 ),
                 margin: EdgeInsets.only(top: 20.0, right: 20.0, left: 20.0),
               ),
               Container(
-                child: RaisedButton(
-                  onPressed: () {
-                    bloc.addSource(keypad, zone, sourceName);
-                  },
-                  child: Text(
-                    'Add Source',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  color: Colors.blue,
-                ),
-                margin: EdgeInsets.only(top: 10.0, right: 20.0, left: 20.0),
-                width: double.infinity,
-              ),
-              Container(
-                child: zone != null && zone.sources.length > 0
-                    ? Text('Select a Source')
-                    : Text('No Sources added.'),
+                child: Text('Button Name',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                 alignment: Alignment.center,
-                margin: EdgeInsets.only(top: 40.0),
+                margin: EdgeInsets.only(top: 60.0),
               ),
               Container(
-                  child: zone != null && zone.sources.length > 0
-                      ? DropdownButton<Sources>(
-                          value: source,
-                          onChanged: (Sources newSource) {
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: TextField(
+                        decoration: InputDecoration(
+                            border: InputBorder.none,
+                            hintText: 'Enter Button Name'),
+                      ),
+                    ),
+                    Container(
+                      child: DropdownButtonHideUnderline(
+                        child: DropdownButton<Buttons>(
+                          value: bloc.buttons[0],
+                          onChanged: (Buttons newButton) {
                             setState(() {
-                              source = newSource;
+                              button = newButton;
                             });
                           },
-                          items: zone.sources
-                              .map<DropdownMenuItem<Sources>>((Sources source) {
-                            return DropdownMenuItem<Sources>(
-                              value: source,
-                              child: Text(source.sourceName),
+                          items: bloc.buttons
+                              .map<DropdownMenuItem<Buttons>>((Buttons button) {
+                            return DropdownMenuItem<Buttons>(
+                              value: button,
+                              child: Text(button.buttonName),
                             );
                           }).toList(),
-                        )
-                      : Text('Add one Source first.')),
+                        ),
+                      ),
+                      margin: EdgeInsets.only(left: 20.0),
+                    )
+                  ],
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                ),
+                margin: EdgeInsets.only(top: 20.0, right: 20.0, left: 20.0),
+              ),
               Container(
-                child: Center(
-                  child: TextField(
-                    decoration:
-                        InputDecoration(labelText: 'Enter Command Name'),
-                    onChanged: (value) {
+                child: Text('Select Command to Button',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                alignment: Alignment.center,
+                margin: EdgeInsets.only(top: 60.0),
+              ),
+              Container(
+                child: DropdownButtonHideUnderline(
+                  child: DropdownButton<Commands>(
+                    value: bloc.commands[0],
+                    onChanged: (Commands newCommand) {
                       setState(() {
-                        commandName = value;
+                        command = newCommand;
                       });
                     },
+                    items: bloc.commands
+                        .map<DropdownMenuItem<Commands>>((Commands command) {
+                      return DropdownMenuItem<Commands>(
+                        value: command,
+                        child: Text(command.command),
+                      );
+                    }).toList(),
                   ),
                 ),
                 margin: EdgeInsets.only(top: 20.0, right: 20.0, left: 20.0),
@@ -189,17 +172,23 @@ class _ConfigScreenState extends State<ConfigScreen> {
               Container(
                 child: RaisedButton(
                   child: Text(
-                    'Add Command',
+                    'Save',
                     style: TextStyle(color: Colors.white),
                   ),
                   color: Colors.blue,
                   onPressed: () {
-                    bloc.addCommand(keypad, zone, source, commandName);
+                    Keypad test = new Keypad('1', keypad, [
+                      new Zones(zone.zoneId, zone.zoneName, [
+                        new Buttons(button.buttonId, button.buttonName,
+                            [new Commands(command.command)])
+                      ])
+                    ]);
+                    bloc.addKeyPad(test);
                   },
                 ),
-                margin: EdgeInsets.only(top: 10.0, right: 20.0, left: 20.0),
                 width: double.infinity,
-              ),
+                margin: EdgeInsets.only(top: 60.0, right: 20.0, left: 20.0),
+              )
             ],
           ),
         ));
