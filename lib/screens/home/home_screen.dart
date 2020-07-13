@@ -1,5 +1,9 @@
 import 'package:automation/models/keypad_model.dart';
+import 'package:automation/screens/bonjour/bonjour_screen.dart';
 import 'package:automation/screens/config/config_screen.dart';
+import 'package:automation/screens/edit/edit_screen.dart';
+import 'package:automation/widgets/dropDown.dart';
+import 'package:automation/widgets/primaryButton.dart';
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/material.dart';
 import '../../bloc/app_bloc.dart';
@@ -14,7 +18,16 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
-    final AppBloc bloc = BlocProvider.getBloc<AppBloc>();
+    final AppBloc _bloc = BlocProvider.getBloc<AppBloc>();
+
+    void _goToConfig() => Navigator.push(
+        context, MaterialPageRoute(builder: (context) => ConfigScreen()));
+
+    void _goToBonjour() => Navigator.push(
+        context, MaterialPageRoute(builder: (context) => BonjourScreen()));
+
+    void _goToEdit(Keypad keypad) => Navigator.push(
+        context, MaterialPageRoute(builder: (context) => EditScreen()));
 
     return Scaffold(
         appBar: AppBar(
@@ -27,25 +40,13 @@ class _HomeScreenState extends State<HomeScreen> {
               Container(
                 child: ButtonTheme(
                     minWidth: 150,
-                    child: RaisedButton(
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => ConfigScreen()));
-                      },
-                      child: Text(
-                        'Add KeyPad',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      color: Colors.blue,
-                    )),
+                    child: primaryButton(context, 'Add KeyPad', _goToConfig)),
                 width: double.infinity,
                 margin: EdgeInsets.only(top: 40.0, right: 20.0, left: 20.0),
               ),
               Container(
                 child: StreamBuilder(
-                  stream: bloc.outKeypads,
+                  stream: _bloc.outKeypads,
                   initialData: [],
                   builder: (context, snapshot) {
                     if (snapshot.data.length > 0) {
@@ -55,21 +56,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: Text('Select a KeyPad'),
                             alignment: Alignment.center,
                           ),
-                          Container(
-                              child: DropdownButton<Keypad>(
-                            value: snapshot.data[0],
-                            onChanged: (Keypad newKeypad) {
-                              setState(() {});
-                            },
-                            items: snapshot.data
-                                .map<DropdownMenuItem<Keypad>>((Keypad keypad) {
-                              print(snapshot.data);
-                              return DropdownMenuItem<Keypad>(
-                                value: keypad,
-                                child: Text(keypad.name),
-                              );
-                            }).toList(),
-                          ))
+                          Container(child: dropDown(snapshot.data, _goToEdit)),
                         ],
                       );
                     } else {
@@ -85,16 +72,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 margin: EdgeInsets.only(top: 50.0, right: 20.0, left: 20.0),
               ),
               Container(
-                child: RaisedButton(
-                    child: Text(
-                      'Send KeyPad',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                    color: Colors.blue,
-                    onPressed: () {}),
+                child: primaryButton(context, 'Send KeyPad', _goToBonjour),
                 width: double.infinity,
                 margin: EdgeInsets.only(top: 50, right: 20.0, left: 20.0),
-              )
+              ),
             ],
           )),
         ));

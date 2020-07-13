@@ -1,16 +1,22 @@
 import 'dart:async';
-
 import 'package:automation/models/keypad_model.dart';
 
 class AppBloc {
   List<Keypad> _keypads = [];
   List<Zones> zones = [
-    new Zones('1', 'Kitchen', []),
-    new Zones('2', 'Bedroom', []),
+    new Zones('1', 'Main', []),
+    new Zones('2', 'Zone 1', []),
+    new Zones('3', 'Zone 2', []),
+    new Zones('4', 'Zone 3', []),
   ];
   List<Buttons> buttons = [
     new Buttons('1', 'Button 1', []),
     new Buttons('2', 'Button 2', []),
+    new Buttons('3', 'Button 3', []),
+    new Buttons('4', 'Button 4', []),
+    new Buttons('5', 'Button 5', []),
+    new Buttons('6', 'Button 6', []),
+    new Buttons('7', 'Button 7', []),
   ];
   List<Commands> commands = [
     new Commands('Turn On'),
