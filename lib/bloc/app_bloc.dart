@@ -1,4 +1,5 @@
-import 'dart:async';
+import 'dart:async' show Stream, StreamController;
+import 'package:automation/database/data_base.dart';
 import 'package:automation/models/keypad_model.dart';
 
 class AppBloc {
@@ -10,17 +11,17 @@ class AppBloc {
     new Zones('4', 'Zone 3', []),
   ];
   List<Buttons> buttons = [
-    new Buttons('1', 'Button 1', []),
-    new Buttons('2', 'Button 2', []),
-    new Buttons('3', 'Button 3', []),
-    new Buttons('4', 'Button 4', []),
-    new Buttons('5', 'Button 5', []),
-    new Buttons('6', 'Button 6', []),
-    new Buttons('7', 'Button 7', []),
+    new Buttons('1', 'Button 1', ''),
+    new Buttons('2', 'Button 2', ''),
+    new Buttons('3', 'Button 3', ''),
+    new Buttons('4', 'Button 4', ''),
+    new Buttons('5', 'Button 5', ''),
+    new Buttons('6', 'Button 6', ''),
+    new Buttons('7', 'Button 7', ''),
   ];
-  List<Commands> commands = [
-    new Commands('Turn On'),
-    new Commands('Turn Off'),
+  List<String> commands = [
+    'Turn On',
+    'Turn Off',
   ];
 
   StreamController<List<Keypad>> _keypadsController =
@@ -28,8 +29,14 @@ class AppBloc {
   Stream<List<Keypad>> get outKeypads => _keypadsController.stream;
   Sink<List<Keypad>> get inKeypads => _keypadsController.sink;
 
-  void addKeyPad(Keypad keypad) {
-    _keypads.add(keypad);
+  void fetchKeypads() async {
+    List<Keypad> keypads = await getKeypads();
+    keypads.map((keypad) => _keypads.add(keypad)).toList();
     inKeypads.add(_keypads);
+  }
+
+  void addKeyPad(Keypad keypad) async {
+    insertKeypad(keypad);
+    fetchKeypads();
   }
 }

@@ -1,16 +1,25 @@
 class Keypad {
-  final String id;
+  final int id;
   final String name;
-  final List<Zones> zones;
+  final String ip;
+  final String mdns;
+  final String password;
+  final String ssid;
+  final Zones zone;
 
-  Keypad(this.id, this.name, this.zones);
+  Keypad(this.id, this.name, this.ip, this.mdns, this.password, this.ssid,
+      this.zone);
 
-  toJson() {
-    List zones = this.zones != null
-        ? this.zones.map((zone) => zone.toJson()).toList()
-        : null;
-
-    return {'id': id, 'name': name, 'zones': zones};
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'ip': ip,
+      'mdns': mdns,
+      'password': password,
+      'ssid': ssid,
+      'zones': zone
+    };
   }
 }
 
@@ -33,25 +42,11 @@ class Zones {
 class Buttons {
   final String buttonId;
   final String name;
-  final List<Commands> commands;
+  final String command;
 
-  Buttons(this.buttonId, this.name, this.commands);
-
-  toJson() {
-    List commands = this.commands != null
-        ? this.commands.map((command) => command.toJson()).toList()
-        : null;
-
-    return {'buttonId': buttonId, 'name': name, 'commands': commands};
-  }
-}
-
-class Commands {
-  final String name;
-
-  Commands(this.name);
+  Buttons(this.buttonId, this.name, this.command);
 
   toJson() {
-    return {'name': name};
+    return {'buttonId': buttonId, 'name': name, 'command': command};
   }
 }

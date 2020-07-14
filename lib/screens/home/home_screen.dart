@@ -20,6 +20,8 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final AppBloc _bloc = BlocProvider.getBloc<AppBloc>();
 
+    WidgetsBinding.instance.addPostFrameCallback((_) => _bloc.fetchKeypads());
+
     void _goToConfig() => Navigator.push(
         context, MaterialPageRoute(builder: (context) => ConfigScreen()));
 

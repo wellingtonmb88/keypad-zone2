@@ -20,7 +20,7 @@ class _ConfigScreenState extends State<ConfigScreen> {
   String _keypad;
   String _zoneName;
   List<String> _buttonsName = new List(7);
-  List<Commands> _commands = new List(7);
+  List<String> _commands = new List(7);
   Zones _zone;
 
   @override
@@ -95,18 +95,23 @@ class _ConfigScreenState extends State<ConfigScreen> {
             button.value != null && button.value.trim().length > 0
                 ? button.value
                 : _bloc.buttons[button.key].name,
-            [new Commands(_commands[button.key].name)],
+            _commands[button.key],
           ));
         }).toList();
 
-        Keypad newKeypad = new Keypad('1', _keypad, [
-          new Zones(
-              _zone.zoneId,
-              _zoneName != null && _zoneName.trim().length > 0
-                  ? _zoneName
-                  : _zone.name,
-              buttons)
-        ]);
+        Keypad newKeypad = new Keypad(
+            0,
+            _keypad,
+            '',
+            '',
+            '',
+            '',
+            new Zones(
+                _zone.zoneId,
+                _zoneName != null && _zoneName.trim().length > 0
+                    ? _zoneName
+                    : _zone.name,
+                buttons));
         _bloc.addKeyPad(newKeypad);
         _shouldGoToBonjour();
       } else {
@@ -120,7 +125,7 @@ class _ConfigScreenState extends State<ConfigScreen> {
       });
     }
 
-    void _saveCommand(index, Commands command) {
+    void _saveCommand(index, String command) {
       setState(() {
         _commands[index] = command;
       });
@@ -163,16 +168,16 @@ class _ConfigScreenState extends State<ConfigScreen> {
             ),
             Container(
               child: DropdownButtonHideUnderline(
-                child: DropdownButton<Commands>(
+                child: DropdownButton<String>(
                   value: _commands[button.key],
-                  onChanged: (Commands newCommand) {
+                  onChanged: (String newCommand) {
                     _saveCommand(button.key, newCommand);
                   },
                   items: _bloc.commands
-                      .map<DropdownMenuItem<Commands>>((Commands command) {
-                    return DropdownMenuItem<Commands>(
+                      .map<DropdownMenuItem<String>>((String command) {
+                    return DropdownMenuItem<String>(
                       value: command,
-                      child: Text(command.name),
+                      child: Text(command),
                     );
                   }).toList(),
                 ),
