@@ -22,7 +22,14 @@ class _BonjourScreenState extends State<BonjourScreen> {
       ),
       body: Container(
         child: Center(
-          child: Text('Screen to search real KeyPads'),
+          child: RaisedButton(
+            child: Text(
+              'Search Keypads',
+              style: TextStyle(color: Colors.white),
+            ),
+            color: Colors.blue,
+            onPressed: () {},
+          ),
         ),
         alignment: Alignment.center,
       ),

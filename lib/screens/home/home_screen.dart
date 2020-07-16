@@ -25,11 +25,8 @@ class _HomeScreenState extends State<HomeScreen> {
     void _goToConfig() => Navigator.push(
         context, MaterialPageRoute(builder: (context) => ConfigScreen()));
 
-    void _goToBonjour() => Navigator.push(
-        context, MaterialPageRoute(builder: (context) => BonjourScreen()));
-
     void _goToEdit(Keypad keypad) => Navigator.push(
-        context, MaterialPageRoute(builder: (context) => EditScreen()));
+        context, MaterialPageRoute(builder: (context) => EditScreen(keypad)));
 
     return Scaffold(
         appBar: AppBar(
@@ -72,11 +69,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 ),
                 margin: EdgeInsets.only(top: 50.0, right: 20.0, left: 20.0),
-              ),
-              Container(
-                child: primaryButton(context, 'Send KeyPad', _goToBonjour),
-                width: double.infinity,
-                margin: EdgeInsets.only(top: 50, right: 20.0, left: 20.0),
               ),
             ],
           )),

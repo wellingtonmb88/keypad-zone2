@@ -1,4 +1,5 @@
 import 'dart:async' show Stream, StreamController;
+import 'dart:convert';
 import 'package:automation/database/data_base.dart';
 import 'package:automation/models/keypad_model.dart';
 
@@ -30,13 +31,16 @@ class AppBloc {
   Sink<List<Keypad>> get inKeypads => _keypadsController.sink;
 
   void fetchKeypads() async {
+    // await delete();
     List<Keypad> keypads = await getKeypads();
     keypads.map((keypad) => _keypads.add(keypad)).toList();
     inKeypads.add(_keypads);
   }
 
   void addKeyPad(Keypad keypad) async {
-    insertKeypad(keypad);
-    fetchKeypads();
+    List<int> response = utf8.encode(json.encode(keypad.toJson()));
+    insertKeypad(response);
+    _keypads.add(keypad);
+    inKeypads.add(_keypads);
   }
 }
