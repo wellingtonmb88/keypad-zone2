@@ -1,3 +1,4 @@
+import 'package:automation/service/bonjour_discover.dart';
 import 'package:flutter/material.dart';
 
 class BonjourScreen extends StatefulWidget {
@@ -28,7 +29,9 @@ class _BonjourScreenState extends State<BonjourScreen> {
               style: TextStyle(color: Colors.white),
             ),
             color: Colors.blue,
-            onPressed: () {},
+            onPressed: () {
+              bonjour();
+            },
           ),
         ),
         alignment: Alignment.center,

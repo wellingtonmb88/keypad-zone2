@@ -106,6 +106,7 @@ class _ConfigScreenState extends State<ConfigScreen> {
             '',
             '',
             '',
+            '',
             new Zones(
                 _zone.zoneId,
                 _zoneName != null && _zoneName.trim().length > 0

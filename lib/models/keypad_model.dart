@@ -1,20 +1,22 @@
 class Keypad {
   final int id;
   final String name;
-  final String ip;
+  final String keypadIp;
+  final String receiverIp;
   final String mdns;
   final String password;
   final String ssid;
   final Zones zone;
 
-  Keypad(this.id, this.name, this.ip, this.mdns, this.password, this.ssid,
+  Keypad(this.id, this.name, this.keypadIp, this.receiverIp, this.mdns, this.password, this.ssid,
       this.zone);
 
   Map<String, dynamic> toJson() {
     return {
       'id': id,
       'name': name,
-      'ip': ip,
+      'keypadIp': keypadIp,
+      'receiverIp': receiverIp,
       'mdns': mdns,
       'password': password,
       'ssid': ssid,

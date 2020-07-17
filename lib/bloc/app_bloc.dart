@@ -1,6 +1,6 @@
 import 'dart:async' show Stream, StreamController;
 import 'dart:convert';
-import 'package:automation/database/data_base.dart';
+import 'package:automation/service/data_base.dart';
 import 'package:automation/models/keypad_model.dart';
 
 class AppBloc {
@@ -42,5 +42,12 @@ class AppBloc {
     insertKeypad(response);
     _keypads.add(keypad);
     inKeypads.add(_keypads);
+  }
+
+  void changeKeypad(Keypad keypad) async {
+    List<int> response = utf8.encode(json.encode(keypad.toJson()));
+    updateKeypad(response, keypad.id);
+    _keypads = [];
+    fetchKeypads();
   }
 }

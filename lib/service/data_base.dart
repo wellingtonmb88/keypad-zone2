@@ -37,7 +37,8 @@ Future<List<Keypad>> getKeypads() async {
       return Keypad(
           keypads[index]['id'],
           newKeypad['name'],
-          newKeypad['ip'],
+          newKeypad['keypadIp'],
+          newKeypad['receiverIp'],
           newKeypad['mdns'],
           newKeypad['password'],
           newKeypad['ssid'],
@@ -60,6 +61,15 @@ void insertKeypad(List<int> keypad) async {
   Database dataBase = await _createConnection();
 
   await dataBase.insert('Keypad', {'keypad': keypad});
+
+  dataBase.close();
+}
+
+void updateKeypad(List<int> keypad, int id) async {
+  Database dataBase = await _createConnection();
+
+  await dataBase.update('Keypad', {'keypad': keypad},
+      where: "id = ?", whereArgs: [id]);
 
   dataBase.close();
 }
