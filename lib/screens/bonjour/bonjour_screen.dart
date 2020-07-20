@@ -1,19 +1,99 @@
+import 'package:automation/bloc/app_bloc.dart';
+import 'package:automation/models/keypad_model.dart';
+import 'package:automation/models/real_keypad_model.dart';
+import 'package:automation/models/receiver_model.dart';
 import 'package:automation/service/bonjour_discover.dart';
+import 'package:automation/widgets/dropDown.dart';
+import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/material.dart';
 
 class BonjourScreen extends StatefulWidget {
-  BonjourScreen();
+  Keypad keypad;
+  int id;
+
+  BonjourScreen(this.keypad, this.id);
 
   @override
   _BonjourScreenState createState() => _BonjourScreenState();
 }
 
 class _BonjourScreenState extends State<BonjourScreen> {
+  String _receiverIp;
+  String _mdnsName;
+  String _keypadIp;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _receiverIp = '';
+    _mdnsName = '';
+    _keypadIp = '';
+  }
+
   @override
   Widget build(BuildContext context) {
+    final AppBloc _bloc = BlocProvider.getBloc<AppBloc>();
+
+    void _showConfirmMessage() {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('KeyPads'),
+              content: Text('Your keypad was connected!'),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).popUntil((route) => route.isFirst);
+                  },
+                ),
+              ],
+            );
+          });
+    }
+
+    void _saveReceiver(Receiver receiver) {
+      setState(() {
+        _receiverIp = receiver.ip;
+      });
+    }
+
+    void _saveMdnsAndIp(RealKeypad keypad) {
+      setState(() {
+        _mdnsName = keypad.name;
+        _keypadIp = keypad.ip;
+      });
+    }
+
+    void _saveKeypad() {
+      Keypad keypad = widget.keypad;
+      Keypad newKeypad = new Keypad(
+          keypad.id == 0 ? widget.id : keypad.id,
+          keypad.name,
+          _keypadIp,
+          _receiverIp,
+          _mdnsName,
+          keypad.password,
+          keypad.ssid,
+          new Zones(
+              keypad.zone.zoneId,
+              keypad.zone.name,
+              List.generate(keypad.zone.buttons.length, (index) {
+                return Buttons(
+                    keypad.zone.buttons[index].buttonId,
+                    keypad.zone.buttons[index].name,
+                    keypad.zone.buttons[index].command);
+              })));
+
+      _bloc.changeKeypad(newKeypad);
+      _showConfirmMessage();
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Search KeyPads'),
+        title: Text('Connect Keypads'),
         leading: new IconButton(
           icon: new Icon(Icons.arrow_back),
           onPressed: () {
@@ -22,19 +102,93 @@ class _BonjourScreenState extends State<BonjourScreen> {
         ),
       ),
       body: Container(
-        child: Center(
-          child: RaisedButton(
-            child: Text(
-              'Search Keypads',
-              style: TextStyle(color: Colors.white),
+        child: Column(
+          children: <Widget>[
+            Container(
+              child: RaisedButton(
+                child: Text(
+                  'Search Devices',
+                  style: TextStyle(color: Colors.white),
+                ),
+                color: Colors.blue,
+                onPressed: () {
+                  bonjour();
+                },
+              ),
+              margin: EdgeInsets.only(top: 10.0),
             ),
-            color: Colors.blue,
-            onPressed: () {
-              bonjour();
-            },
-          ),
+            Container(
+              child: StreamBuilder(
+                stream: _bloc.outReceivers,
+                initialData: [],
+                builder: (context, snapshot) {
+                  if (snapshot.data.length > 0) {
+                    return Column(
+                      children: <Widget>[
+                        Container(
+                          child: Text('Select a Receiver'),
+                          alignment: Alignment.center,
+                        ),
+                        Container(
+                            child: dropDown(snapshot.data, _saveReceiver)),
+                      ],
+                    );
+                  } else {
+                    return Column(
+                      children: <Widget>[
+                        Text('No Receivers Founded.'),
+                      ],
+                    );
+                  }
+                },
+              ),
+              margin: EdgeInsets.only(top: 20.0),
+            ),
+            Container(
+              child: StreamBuilder(
+                stream: _bloc.outRealKeypads,
+                initialData: [],
+                builder: (context, snapshot) {
+                  if (snapshot.data.length > 0) {
+                    return Column(
+                      children: <Widget>[
+                        Container(
+                          child: Text('Select a Keypad'),
+                          alignment: Alignment.center,
+                        ),
+                        Container(
+                            child: dropDown(snapshot.data, _saveMdnsAndIp)),
+                      ],
+                    );
+                  } else {
+                    return Column(
+                      children: <Widget>[
+                        Text('No Keypads Founded.'),
+                      ],
+                    );
+                  }
+                },
+              ),
+              margin: EdgeInsets.only(top: 20.0),
+            ),
+            Container(
+              child: RaisedButton(
+                child: Text(
+                  'Connect Keypad',
+                  style: TextStyle(color: Colors.white),
+                ),
+                color: Colors.blue,
+                onPressed: () {
+                  _saveKeypad();
+                },
+              ),
+              margin: EdgeInsets.only(top: 30.0),
+              width: double.infinity,
+            ),
+          ],
         ),
         alignment: Alignment.center,
+        margin: EdgeInsets.all(20.0),
       ),
     );
   }

@@ -14,7 +14,6 @@ class EditScreen extends StatefulWidget {
 }
 
 class _EditScreenState extends State<EditScreen> {
-  final AppBloc _bloc = BlocProvider.getBloc<AppBloc>();
   String _ssid;
   String _password;
 
@@ -26,31 +25,61 @@ class _EditScreenState extends State<EditScreen> {
     _password = widget.keypad.password;
   }
 
-  void _saveKeypad() {
-    Keypad keypad = widget.keypad;
-    Keypad newKeypad = new Keypad(
-        keypad.id,
-        keypad.name,
-        keypad.keypadIp,
-        keypad.receiverIp,
-        keypad.mdns,
-        this._password,
-        this._ssid,
-        new Zones(
-            keypad.zone.zoneId,
-            keypad.zone.name,
-            List.generate(keypad.zone.buttons.length, (index) {
-              return Buttons(
-                  keypad.zone.buttons[index].buttonId,
-                  keypad.zone.buttons[index].name,
-                  keypad.zone.buttons[index].command);
-            })));
-
-    _bloc.changeKeypad(newKeypad);
-  }
-
   @override
   Widget build(BuildContext context) {
+    final AppBloc _bloc = BlocProvider.getBloc<AppBloc>();
+
+    void _showConfirmMessage() {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text('KeyPads'),
+              content: Text('Your keypad was saved!'),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          });
+    }
+
+    void _saveKeypad(String password) {
+      Keypad keypad = widget.keypad;
+      Keypad newKeypad = new Keypad(
+          keypad.id,
+          keypad.name,
+          keypad.keypadIp,
+          keypad.receiverIp,
+          keypad.mdns,
+          password,
+          this._ssid,
+          new Zones(
+              keypad.zone.zoneId,
+              keypad.zone.name,
+              List.generate(keypad.zone.buttons.length, (index) {
+                return Buttons(
+                    keypad.zone.buttons[index].buttonId,
+                    keypad.zone.buttons[index].name,
+                    keypad.zone.buttons[index].command);
+              })));
+
+      _bloc.changeKeypad(newKeypad);
+      _showConfirmMessage();
+    }
+
+    Future<void> _criptoPassword() async {
+      if (_password.trim().length > 0) {
+        _saveKeypad(_password);
+      } else {
+        _saveKeypad('');
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit KeyPads'),
@@ -95,6 +124,7 @@ class _EditScreenState extends State<EditScreen> {
                           fontSize: 16,
                         ),
                       ),
+                      margin: EdgeInsets.only(left: 10.0),
                     )
                   ],
                 ),
@@ -115,6 +145,7 @@ class _EditScreenState extends State<EditScreen> {
                           fontSize: 16,
                         ),
                       ),
+                      margin: EdgeInsets.only(left: 10.0),
                     )
                   ],
                 ),
@@ -135,6 +166,7 @@ class _EditScreenState extends State<EditScreen> {
                           fontSize: 16,
                         ),
                       ),
+                      margin: EdgeInsets.only(left: 10.0),
                     )
                   ],
                 ),
@@ -156,8 +188,12 @@ class _EditScreenState extends State<EditScreen> {
                       child: TextField(
                         decoration: InputDecoration(
                             border: InputBorder.none,
-                            hintText:
-                                this._ssid.trim().length > 0 ? this._ssid : 'Enter SSID'),
+                            hintText: this._ssid.trim().length > 0
+                                ? this._ssid
+                                : 'Change SSID',
+                            hintStyle: this._ssid.trim().length > 0
+                                ? TextStyle(color: Colors.black)
+                                : TextStyle()),
                         onChanged: (value) {
                           setState(() {
                             this._ssid = value;
@@ -185,9 +221,7 @@ class _EditScreenState extends State<EditScreen> {
                     child: TextField(
                       decoration: InputDecoration(
                           border: InputBorder.none,
-                          hintText: this._password.trim().length > 0
-                              ? this._password
-                              : 'Enter Password'),
+                          hintText: 'Change Password'),
                       onChanged: (value) {
                         setState(() {
                           this._password = value;
@@ -207,7 +241,7 @@ class _EditScreenState extends State<EditScreen> {
                 ),
                 color: Colors.blue,
                 onPressed: () {
-                  this._saveKeypad();
+                  _criptoPassword();
                 },
               ),
               width: double.infinity,
@@ -229,8 +263,11 @@ class _EditScreenState extends State<EditScreen> {
                 ),
                 color: Colors.blue,
                 onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => BonjourScreen()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              BonjourScreen(widget.keypad, widget.keypad.id)));
                 },
               ),
               width: double.infinity,

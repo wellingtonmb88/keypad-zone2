@@ -1,4 +1,8 @@
 import 'dart:async';
+import 'package:automation/bloc/app_bloc.dart';
+import 'package:automation/models/real_keypad_model.dart';
+import 'package:automation/models/receiver_model.dart';
+import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:mdns_plugin/mdns_plugin.dart';
 
 void bonjour() async {
@@ -8,10 +12,13 @@ void bonjour() async {
 }
 
 Future sleep(mdns) {
-  return new Future.delayed(const Duration(seconds: 30), () async => await mdns.stopDiscovery());
+  return new Future.delayed(
+      const Duration(seconds: 5), () async => await mdns.stopDiscovery());
 }
 
 class Delegate implements MDNSPluginDelegate {
+  final AppBloc _bloc = BlocProvider.getBloc<AppBloc>();
+
   void onDiscoveryStarted() {
     print("Discovery started");
   }
@@ -27,6 +34,16 @@ class Delegate implements MDNSPluginDelegate {
 
   void onServiceResolved(MDNSService service) {
     print("Resolved: $service");
+
+    if (service.name.contains('DENON')) {
+      Receiver receiver = new Receiver(service.name, service.addresses[0]);
+      _bloc.setReceiver(receiver);
+    }
+
+    if (service.name.contains('KEYPAD')) {
+      RealKeypad keypad = new RealKeypad(service.name, service.addresses[0]);
+      _bloc.setRealKeypad(keypad);
+    }
   }
 
   void onServiceUpdated(MDNSService service) {

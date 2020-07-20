@@ -19,8 +19,8 @@ class _ConfigScreenState extends State<ConfigScreen> {
   final AppBloc _bloc = BlocProvider.getBloc<AppBloc>();
   String _keypad;
   String _zoneName;
-  List<String> _buttonsName = new List(7);
-  List<String> _commands = new List(7);
+  List<String> _buttonsName = new List(8);
+  List<String> _commands = new List(8);
   Zones _zone;
 
   @override
@@ -28,16 +28,16 @@ class _ConfigScreenState extends State<ConfigScreen> {
     super.initState();
 
     _zone = _bloc.zones[0];
-    for (var index = 0; index < 7; index++) {
+    for (var index = 0; index < 8; index++) {
       _commands[index] = _bloc.commands[0];
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    void _goToBonjour() {
+    void _goToBonjour(Keypad keypad, int id) {
       Navigator.push(
-          context, MaterialPageRoute(builder: (context) => BonjourScreen()));
+          context, MaterialPageRoute(builder: (context) => BonjourScreen(keypad, id)));
     }
 
     void _errorAlert() {
@@ -59,7 +59,7 @@ class _ConfigScreenState extends State<ConfigScreen> {
           });
     }
 
-    void _shouldGoToBonjour() {
+    void _shouldGoToBonjour(Keypad keypad, int id) {
       showDialog(
           context: context,
           builder: (BuildContext context) {
@@ -78,7 +78,7 @@ class _ConfigScreenState extends State<ConfigScreen> {
                   child: Text('Yes!'),
                   onPressed: () {
                     Navigator.of(context).pop();
-                    _goToBonjour();
+                    _goToBonjour(keypad, id);
                   },
                 ),
               ],
@@ -86,7 +86,7 @@ class _ConfigScreenState extends State<ConfigScreen> {
           });
     }
 
-    void _saveKeyPad() {
+    Future<void> _saveKeyPad() async {
       if (_keypad != null && _keypad.trim().length > 0) {
         List<Buttons> buttons = [];
         _buttonsName.asMap().entries.map((button) {
@@ -113,8 +113,8 @@ class _ConfigScreenState extends State<ConfigScreen> {
                     ? _zoneName
                     : _zone.name,
                 buttons));
-        _bloc.addKeyPad(newKeypad);
-        _shouldGoToBonjour();
+        int id = await _bloc.addKeyPad(newKeypad);
+        _shouldGoToBonjour(newKeypad, id);
       } else {
         _errorAlert();
       }

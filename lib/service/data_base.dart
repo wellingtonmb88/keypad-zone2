@@ -57,12 +57,14 @@ Future<List<Keypad>> getKeypads() async {
   }
 }
 
-void insertKeypad(List<int> keypad) async {
+Future<int> insertKeypad(List<int> keypad) async {
   Database dataBase = await _createConnection();
 
-  await dataBase.insert('Keypad', {'keypad': keypad});
+  int id = await dataBase.rawInsert('INSERT INTO Keypad (keypad) VALUES (?)', [keypad]);
 
   dataBase.close();
+
+  return id;
 }
 
 void updateKeypad(List<int> keypad, int id) async {
