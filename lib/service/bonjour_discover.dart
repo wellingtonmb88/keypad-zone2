@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:automation/bloc/app_bloc.dart';
 import 'package:automation/models/real_keypad_model.dart';
 import 'package:automation/models/receiver_model.dart';
@@ -36,7 +37,7 @@ class Delegate implements MDNSPluginDelegate {
     print("Resolved: $service");
 
     if (service.name.contains('DENON')) {
-      Receiver receiver = new Receiver(service.name, service.addresses[0]);
+      Receiver receiver = new Receiver(service.name, Platform.isIOS ? service.addresses[0] : service.hostName);
       _bloc.setReceiver(receiver);
     }
 

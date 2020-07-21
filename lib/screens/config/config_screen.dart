@@ -1,6 +1,6 @@
 import 'package:automation/bloc/app_bloc.dart';
 import 'package:automation/models/keypad_model.dart';
-import 'package:automation/screens/bonjour/bonjour_screen.dart';
+import 'package:automation/screens/bonjour/bonjour_receiver_screen.dart';
 import 'package:automation/widgets/dropDown.dart';
 import 'package:automation/widgets/primaryButton.dart';
 import 'package:automation/widgets/textField.dart';
@@ -20,7 +20,7 @@ class _ConfigScreenState extends State<ConfigScreen> {
   String _keypad;
   String _zoneName;
   List<String> _buttonsName = new List(8);
-  List<String> _commands = new List(8);
+  List<Commands> _commands = new List(8);
   Zones _zone;
 
   @override
@@ -36,8 +36,8 @@ class _ConfigScreenState extends State<ConfigScreen> {
   @override
   Widget build(BuildContext context) {
     void _goToBonjour(Keypad keypad, int id) {
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => BonjourScreen(keypad, id)));
+      Navigator.push(context,
+          MaterialPageRoute(builder: (context) => BonjourReceiver(keypad, id)));
     }
 
     void _errorAlert() {
@@ -65,19 +65,12 @@ class _ConfigScreenState extends State<ConfigScreen> {
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text('KeyPads'),
-              content: Text(
-                  'Do you want to send this configuration to a real KeyPad?'),
+              content:
+                  Text('Your Keypad was saved! Now connect to a Receiver.'),
               actions: <Widget>[
                 FlatButton(
-                  child: Text('Not now.'),
+                  child: Text('OK'),
                   onPressed: () {
-                    Navigator.of(context).popUntil((route) => route.isFirst);
-                  },
-                ),
-                FlatButton(
-                  child: Text('Yes!'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
                     _goToBonjour(keypad, id);
                   },
                 ),
@@ -95,13 +88,14 @@ class _ConfigScreenState extends State<ConfigScreen> {
             button.value != null && button.value.trim().length > 0
                 ? button.value
                 : _bloc.buttons[button.key].name,
-            _commands[button.key],
+            'MainZone/index.put.asp?${_commands[button.key].command}&ZoneName=ZONE1',
           ));
         }).toList();
 
         Keypad newKeypad = new Keypad(
             0,
             _keypad,
+            '',
             '',
             '',
             '',
@@ -126,7 +120,7 @@ class _ConfigScreenState extends State<ConfigScreen> {
       });
     }
 
-    void _saveCommand(index, String command) {
+    void _saveCommand(index, Commands command) {
       setState(() {
         _commands[index] = command;
       });
@@ -169,16 +163,16 @@ class _ConfigScreenState extends State<ConfigScreen> {
             ),
             Container(
               child: DropdownButtonHideUnderline(
-                child: DropdownButton<String>(
+                child: DropdownButton<Commands>(
                   value: _commands[button.key],
-                  onChanged: (String newCommand) {
+                  onChanged: (Commands newCommand) {
                     _saveCommand(button.key, newCommand);
                   },
                   items: _bloc.commands
-                      .map<DropdownMenuItem<String>>((String command) {
-                    return DropdownMenuItem<String>(
+                      .map<DropdownMenuItem<Commands>>((Commands command) {
+                    return DropdownMenuItem<Commands>(
                       value: command,
-                      child: Text(command),
+                      child: Text(command.name),
                     );
                   }).toList(),
                 ),

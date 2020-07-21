@@ -1,7 +1,6 @@
 import 'package:automation/models/keypad_model.dart';
-import 'package:automation/screens/bonjour/bonjour_screen.dart';
 import 'package:automation/screens/config/config_screen.dart';
-import 'package:automation/screens/edit/edit_screen.dart';
+import 'package:automation/screens/keypad/keypad_screen.dart';
 import 'package:automation/widgets/dropDown.dart';
 import 'package:automation/widgets/primaryButton.dart';
 import 'package:bloc_pattern/bloc_pattern.dart';
@@ -25,53 +24,78 @@ class _HomeScreenState extends State<HomeScreen> {
     void _goToConfig() => Navigator.push(
         context, MaterialPageRoute(builder: (context) => ConfigScreen()));
 
-    void _goToEdit(Keypad keypad) => Navigator.push(
-        context, MaterialPageRoute(builder: (context) => EditScreen(keypad)));
+    void _goToKeypad(Keypad keypad) => Navigator.push(
+        context, MaterialPageRoute(builder: (context) => KeypadScreen(keypad)));
 
-    return Scaffold(
-        appBar: AppBar(
-          title: Text('Home Screen'),
-        ),
-        body: SingleChildScrollView(
-          child: Container(
-              child: Column(
-            children: <Widget>[
-              Container(
-                child: ButtonTheme(
-                    minWidth: 150,
-                    child: primaryButton(context, 'Add KeyPad', _goToConfig)),
-                width: double.infinity,
-                margin: EdgeInsets.only(top: 40.0, right: 20.0, left: 20.0),
-              ),
-              Container(
-                child: StreamBuilder(
-                  stream: _bloc.outKeypads,
-                  initialData: [],
-                  builder: (context, snapshot) {
-                    if (snapshot.data.length > 0) {
-                      return Column(
-                        children: <Widget>[
-                          Container(
-                            child: Text('Select a KeyPad'),
-                            alignment: Alignment.center,
-                          ),
-                          Container(child: dropDown(snapshot.data, _goToEdit)),
-                        ],
-                      );
-                    } else {
-                      return Column(
-                        children: <Widget>[
-                          Text('No KeyPads added.'),
-                          Text('Add one KeyPad first'),
-                        ],
-                      );
-                    }
+    return StreamBuilder(
+      stream: _bloc.outKeypads,
+      initialData: [],
+      builder: (context, snapshot) {
+        if (snapshot.data.length > 0) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text('Home Screen'),
+              actions: <Widget>[
+                IconButton(
+                  icon: Icon(
+                    Icons.add,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    _goToConfig();
                   },
                 ),
-                margin: EdgeInsets.only(top: 50.0, right: 20.0, left: 20.0),
+              ],
+            ),
+            body: Container(
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    child: Text(
+                      'Select a Keypad',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+                    ),
+                  ),
+                  Container(
+                    child: dropDown(snapshot.data, _goToKeypad),
+                  )
+                ],
               ),
-            ],
-          )),
-        ));
+              margin: EdgeInsets.only(top: 100),
+              alignment: Alignment.topCenter,
+            ),
+          );
+        } else {
+          return Scaffold(
+            appBar: AppBar(
+              title: Text('Home Screen'),
+            ),
+            body: Container(
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    child: Text('No Keypads added.'),
+                  ),
+                  Container(
+                    child: Text('Click the button below to add Keypads'),
+                  ),
+                  Container(
+                    child: ButtonTheme(
+                        minWidth: 150,
+                        child:
+                            primaryButton(context, 'Add KeyPad', _goToConfig)),
+                    width: double.infinity,
+                    margin: EdgeInsets.only(top: 40.0, right: 20.0, left: 20.0),
+                  ),
+                ],
+              ),
+              margin: EdgeInsets.only(top: 100),
+              alignment: Alignment.topCenter,
+            ),
+          );
+        }
+      },
+    );
   }
 }

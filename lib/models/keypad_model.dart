@@ -3,13 +3,14 @@ class Keypad {
   final String name;
   final String keypadIp;
   final String receiverIp;
-  final String mdns;
+  final String keypadMdns;
+  final String receiverMdns;
   final String password;
   final String ssid;
   final Zones zone;
 
-  Keypad(this.id, this.name, this.keypadIp, this.receiverIp, this.mdns, this.password, this.ssid,
-      this.zone);
+  Keypad(this.id, this.name, this.keypadIp, this.receiverIp, this.keypadMdns,
+      this.receiverMdns, this.password, this.ssid, this.zone);
 
   Map<String, dynamic> toJson() {
     return {
@@ -17,7 +18,8 @@ class Keypad {
       'name': name,
       'keypadIp': keypadIp,
       'receiverIp': receiverIp,
-      'mdns': mdns,
+      'keypadMdns': keypadMdns,
+      'receiverMdns': receiverMdns,
       'password': password,
       'ssid': ssid,
       'zones': zone
@@ -50,5 +52,16 @@ class Buttons {
 
   toJson() {
     return {'buttonId': buttonId, 'name': name, 'command': command};
+  }
+}
+
+class Commands {
+  final String name;
+  final String command;
+
+  Commands(this.name, this.command);
+
+  toJson() {
+    return {'name': name, 'command': command};
   }
 }

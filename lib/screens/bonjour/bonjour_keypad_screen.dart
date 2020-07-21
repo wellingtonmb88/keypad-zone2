@@ -1,33 +1,30 @@
 import 'package:automation/bloc/app_bloc.dart';
 import 'package:automation/models/keypad_model.dart';
 import 'package:automation/models/real_keypad_model.dart';
-import 'package:automation/models/receiver_model.dart';
 import 'package:automation/service/bonjour_discover.dart';
 import 'package:automation/widgets/dropDown.dart';
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/material.dart';
 
-class BonjourScreen extends StatefulWidget {
-  Keypad keypad;
-  int id;
+class BonjourKeypad extends StatefulWidget {
+  final Keypad keypad;
+  final int id;
 
-  BonjourScreen(this.keypad, this.id);
+  BonjourKeypad(this.keypad, this.id);
 
   @override
-  _BonjourScreenState createState() => _BonjourScreenState();
+  _BonjourKeypadState createState() => _BonjourKeypadState();
 }
 
-class _BonjourScreenState extends State<BonjourScreen> {
-  String _receiverIp;
-  String _mdnsName;
+class _BonjourKeypadState extends State<BonjourKeypad> {
+  String _keypadMdns;
   String _keypadIp;
 
   @override
   void initState() {
     super.initState();
 
-    _receiverIp = '';
-    _mdnsName = '';
+    _keypadMdns = '';
     _keypadIp = '';
   }
 
@@ -54,15 +51,9 @@ class _BonjourScreenState extends State<BonjourScreen> {
           });
     }
 
-    void _saveReceiver(Receiver receiver) {
-      setState(() {
-        _receiverIp = receiver.ip;
-      });
-    }
-
     void _saveMdnsAndIp(RealKeypad keypad) {
       setState(() {
-        _mdnsName = keypad.name;
+        _keypadMdns = keypad.name;
         _keypadIp = keypad.ip;
       });
     }
@@ -73,8 +64,9 @@ class _BonjourScreenState extends State<BonjourScreen> {
           keypad.id == 0 ? widget.id : keypad.id,
           keypad.name,
           _keypadIp,
-          _receiverIp,
-          _mdnsName,
+          keypad.receiverIp,
+          _keypadMdns,
+          keypad.receiverMdns,
           keypad.password,
           keypad.ssid,
           new Zones(
@@ -116,33 +108,6 @@ class _BonjourScreenState extends State<BonjourScreen> {
                 },
               ),
               margin: EdgeInsets.only(top: 10.0),
-            ),
-            Container(
-              child: StreamBuilder(
-                stream: _bloc.outReceivers,
-                initialData: [],
-                builder: (context, snapshot) {
-                  if (snapshot.data.length > 0) {
-                    return Column(
-                      children: <Widget>[
-                        Container(
-                          child: Text('Select a Receiver'),
-                          alignment: Alignment.center,
-                        ),
-                        Container(
-                            child: dropDown(snapshot.data, _saveReceiver)),
-                      ],
-                    );
-                  } else {
-                    return Column(
-                      children: <Widget>[
-                        Text('No Receivers Founded.'),
-                      ],
-                    );
-                  }
-                },
-              ),
-              margin: EdgeInsets.only(top: 20.0),
             ),
             Container(
               child: StreamBuilder(
@@ -188,7 +153,7 @@ class _BonjourScreenState extends State<BonjourScreen> {
           ],
         ),
         alignment: Alignment.center,
-        margin: EdgeInsets.all(20.0),
+        margin: EdgeInsets.only(right: 20.0, left: 20.0, top: 50.0),
       ),
     );
   }

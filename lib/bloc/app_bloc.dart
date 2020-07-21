@@ -10,10 +10,10 @@ class AppBloc {
   List<Receiver> _receivers = [];
   List<RealKeypad> _realKeypads = [];
   List<Zones> zones = [
-    new Zones('1', 'Main', []),
-    new Zones('2', 'Zone 1', []),
-    new Zones('3', 'Zone 2', []),
-    new Zones('4', 'Zone 3', []),
+    new Zones('1', 'MAIN', []),
+    new Zones('2', 'ZONE2', []),
+    new Zones('3', 'ZONE3', []),
+    new Zones('4', 'ZONE4', []),
   ];
   List<Buttons> buttons = [
     new Buttons('1', 'Button 1', ''),
@@ -25,9 +25,21 @@ class AppBloc {
     new Buttons('7', 'Button 7', ''),
     new Buttons('8', 'Button 8', ''),
   ];
-  List<String> commands = [
-    'Turn On',
-    'Turn Off',
+  List<Commands> commands = [
+    new Commands('Turn On', 'cmd0=PutZone_OnOff%2FON'),
+    new Commands('Turn Off', 'cmd0=PutZone_OnOff%2FOFF'),
+    new Commands('Volume Up', 'cmd0=PutMasterVolumeBtn/>'),
+    new Commands('Volume Down', 'cmd0=PutMasterVolumeBtn/<'),
+    new Commands('Mute On', 'cmd0=PutVolumeMute/on'),
+    new Commands('Mute Off', 'cmd0=PutVolumeMute/off'),
+    new Commands('SAT', 'cmd0=PutZone_InputFunction%2FSAT%2FCBL'),
+    new Commands('DVD', 'cmd0=PutZone_InputFunction%2FDVD'),
+    new Commands('MPLAY', 'cmd0=PutZone_InputFunction%2FMPLAY'),
+    new Commands('Phono', 'cmd0=PutZone_InputFunction%2FPHONO'),
+    new Commands('Aux', 'cmd0=PutZone_InputFunction%2FAUX1'),
+    new Commands('CD', 'cmd0=PutZone_InputFunction%2FCD'),
+    new Commands('Game', 'cmd0=PutZone_InputFunction%2FGAME'),
+    new Commands('Tv', 'cmd0=PutZone_InputFunction%2FTV'),
   ];
 
   StreamController<List<Keypad>> _keypadsController =
@@ -79,5 +91,11 @@ class AppBloc {
     _realKeypads = [];
     _realKeypads.add(keypad);
     inRealKeypads.add(_realKeypads);
+  }
+
+  void dispose() {
+    _keypadsController.close();
+    _realKeypadsController.close();
+    _receiverController.close();
   }
 }

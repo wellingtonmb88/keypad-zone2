@@ -39,7 +39,8 @@ Future<List<Keypad>> getKeypads() async {
           newKeypad['name'],
           newKeypad['keypadIp'],
           newKeypad['receiverIp'],
-          newKeypad['mdns'],
+          newKeypad['keypadMdns'],
+          newKeypad['receiverMdns'],
           newKeypad['password'],
           newKeypad['ssid'],
           Zones(
