@@ -6,6 +6,7 @@ import 'package:automation/service/data_base.dart';
 import 'package:automation/models/keypad_model.dart';
 
 class AppBloc {
+  bool loading = false;
   List<Keypad> _keypads = [];
   List<Receiver> _receivers = [];
   List<RealKeypad> _realKeypads = [];
@@ -57,6 +58,16 @@ class AppBloc {
   Stream<List<RealKeypad>> get outRealKeypads => _realKeypadsController.stream;
   Sink<List<RealKeypad>> get inRealKeypads => _realKeypadsController.sink;
 
+  StreamController<bool> _loadingController =
+      StreamController<bool>.broadcast();
+  Stream<bool> get outLoading => _loadingController.stream;
+  Sink<bool> get inLoading => _loadingController.sink;
+
+  void setLoading(bool showLoading) {
+    loading = showLoading;
+    inLoading.add(loading);
+  }
+
   void fetchKeypads() async {
     // await delete();
     List<Keypad> keypads = await getKeypads();
@@ -65,20 +76,31 @@ class AppBloc {
   }
 
   Future<int> addKeyPad(Keypad keypad) async {
+    loading = true;
+    inLoading.add(loading);
     List<int> response = utf8.encode(json.encode(keypad.toJson()));
     int id = await insertKeypad(response);
 
     _keypads.add(keypad);
     inKeypads.add(_keypads);
 
+    loading = false;
+    inLoading.add(loading);
+
     return id;
   }
 
   void changeKeypad(Keypad keypad) async {
+    loading = true;
+    inLoading.add(loading);
+
     List<int> response = utf8.encode(json.encode(keypad.toJson()));
     updateKeypad(response, keypad.id);
     _keypads = [];
     fetchKeypads();
+
+    loading = false;
+    inLoading.add(loading);
   }
 
   void setReceiver(Receiver receiver) {
@@ -97,5 +119,6 @@ class AppBloc {
     _keypadsController.close();
     _realKeypadsController.close();
     _receiverController.close();
+    _loadingController.close();
   }
 }

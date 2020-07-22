@@ -37,18 +37,18 @@ Future<List<Keypad>> getKeypads() async {
       return Keypad(
           keypads[index]['id'],
           newKeypad['name'],
-          newKeypad['keypadIp'],
-          newKeypad['receiverIp'],
-          newKeypad['keypadMdns'],
-          newKeypad['receiverMdns'],
+          newKeypad['keypad_ip'],
+          newKeypad['receiver_ip'],
+          newKeypad['keypad_mdns'],
+          newKeypad['receiver_mdns'],
           newKeypad['password'],
           newKeypad['ssid'],
           Zones(
-              newKeypad['zones']['zoneId'],
+              newKeypad['zones']['zone_id'],
               newKeypad['zones']['name'],
               List.generate(newKeypad['zones']['buttons'].length, (index) {
                 return Buttons(
-                    newKeypad['zones']['buttons'][index]['buttonId'],
+                    newKeypad['zones']['buttons'][index]['button_id'],
                     newKeypad['zones']['buttons'][index]['name'],
                     newKeypad['zones']['buttons'][index]['command']);
               })));
@@ -61,7 +61,8 @@ Future<List<Keypad>> getKeypads() async {
 Future<int> insertKeypad(List<int> keypad) async {
   Database dataBase = await _createConnection();
 
-  int id = await dataBase.rawInsert('INSERT INTO Keypad (keypad) VALUES (?)', [keypad]);
+  int id = await dataBase
+      .rawInsert('INSERT INTO Keypad (keypad) VALUES (?)', [keypad]);
 
   dataBase.close();
 

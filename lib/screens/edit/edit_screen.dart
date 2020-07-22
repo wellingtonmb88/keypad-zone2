@@ -1,8 +1,13 @@
 import 'package:automation/bloc/app_bloc.dart';
 import 'package:automation/models/keypad_model.dart';
 import 'package:automation/screens/bonjour/bonjour_keypad_screen.dart';
+import 'package:automation/widgets/informationRow.dart';
+import 'package:automation/widgets/primaryButton.dart';
 import 'package:bloc_pattern/bloc_pattern.dart';
+import 'package:encrypt/encrypt.dart';
 import 'package:flutter/material.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class EditScreen extends StatefulWidget {
   final Keypad keypad;
@@ -73,12 +78,28 @@ class _EditScreenState extends State<EditScreen> {
       _showConfirmMessage();
     }
 
-    Future<void> _criptoPassword() async {
+    Future<void> _cryptoPassword() async {
       if (_password.trim().length > 0) {
-        _saveKeypad(_password);
+        final plainText = _password;
+        final key = encrypt.Key.fromUtf8(DotEnv().env['KEY']);
+        final iv = IV.fromLength(8);
+
+        final encrypter = Encrypter(Salsa20(key));
+
+        final encrypted = encrypter.encrypt(plainText, iv: iv);
+
+        _saveKeypad(encrypted.base64);
       } else {
         _saveKeypad('');
       }
+    }
+
+    void _goToBonjour() {
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) =>
+                  BonjourKeypad(widget.keypad, widget.keypad.id)));
     }
 
     return Scaffold(
@@ -97,45 +118,11 @@ class _EditScreenState extends State<EditScreen> {
                 margin: EdgeInsets.only(bottom: 20),
               ),
               Container(
-                  child: Row(
-                    children: <Widget>[
-                      Text(
-                        'Keypad IP:',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      Container(
-                        child: Text(
-                          widget.keypad.keypadIp,
-                          style: TextStyle(
-                            fontSize: 16,
-                          ),
-                        ),
-                        margin: EdgeInsets.only(left: 10.0),
-                      )
-                    ],
-                  ),
+                  child: informationRow('Keypad IP:', widget.keypad.keypadIp),
                   margin: EdgeInsets.only(bottom: 10.0)),
               Divider(color: Colors.grey, height: 1),
               Container(
-                  child: Row(
-                    children: <Widget>[
-                      Text(
-                        'MDns Name:',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      Container(
-                        child: Text(
-                          widget.keypad.keypadMdns,
-                          style: TextStyle(
-                            fontSize: 16,
-                          ),
-                        ),
-                        margin: EdgeInsets.only(left: 10.0),
-                      )
-                    ],
-                  ),
+                  child: informationRow('MDns Name:', widget.keypad.keypadMdns),
                   margin: EdgeInsets.only(top: 10.0, bottom: 10.0)),
               Divider(color: Colors.grey, height: 1),
               Container(
@@ -208,58 +195,31 @@ class _EditScreenState extends State<EditScreen> {
                 margin: EdgeInsets.only(top: 40),
               ),
               Container(
-                  child: Row(
-                    children: <Widget>[
-                      Text(
-                        'Receiver IP:',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      Container(
-                        child: Text(
-                          widget.keypad.receiverIp,
-                          style: TextStyle(
-                            fontSize: 16,
-                          ),
-                        ),
-                        margin: EdgeInsets.only(left: 10.0),
-                      )
-                    ],
-                  ),
+                  child:
+                      informationRow('Receiver IP:', widget.keypad.receiverIp),
                   margin: EdgeInsets.only(top: 20.0, bottom: 10.0)),
               Divider(color: Colors.grey, height: 1),
               Container(
-                  child: Row(
-                    children: <Widget>[
-                      Text(
-                        'MDns Name:',
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ),
-                      Container(
-                        child: Text(
-                          widget.keypad.receiverMdns,
-                          style: TextStyle(
-                            fontSize: 16,
-                          ),
-                        ),
-                        margin: EdgeInsets.only(left: 10.0),
-                      )
-                    ],
-                  ),
+                  child:
+                      informationRow('MDns Name:', widget.keypad.receiverMdns),
                   margin: EdgeInsets.only(top: 10.0, bottom: 10.0)),
               Divider(color: Colors.grey, height: 1),
               Container(
-                child: RaisedButton(
-                  child: Text(
-                    'Save Changes',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  color: Colors.blue,
-                  onPressed: () {
-                    _criptoPassword();
+                child: StreamBuilder(
+                  stream: _bloc.outLoading,
+                  initialData: false,
+                  builder: (context, snapshot) {
+                    if (snapshot.data == true) {
+                      return CircularProgressIndicator();
+                    } else {
+                      return Container();
+                    }
                   },
                 ),
+                margin: EdgeInsets.only(top: 20),
+              ),
+              Container(
+                child: primaryButton('Save Changes', _cryptoPassword),
                 width: double.infinity,
                 margin: EdgeInsets.only(top: 50.0),
               ),
@@ -272,20 +232,7 @@ class _EditScreenState extends State<EditScreen> {
                 margin: EdgeInsets.only(top: 50.0),
               ),
               Container(
-                child: RaisedButton(
-                  child: Text(
-                    'Send Keypad',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  color: Colors.blue,
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => BonjourKeypad(
-                                widget.keypad, widget.keypad.id)));
-                  },
-                ),
+                child: primaryButton('Send Keypad', _goToBonjour),
                 width: double.infinity,
                 margin: EdgeInsets.only(top: 20.0),
               )

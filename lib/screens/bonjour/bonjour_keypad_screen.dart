@@ -3,6 +3,7 @@ import 'package:automation/models/keypad_model.dart';
 import 'package:automation/models/real_keypad_model.dart';
 import 'package:automation/service/bonjour_discover.dart';
 import 'package:automation/widgets/dropDown.dart';
+import 'package:automation/widgets/primaryButton.dart';
 import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/material.dart';
 
@@ -137,16 +138,21 @@ class _BonjourKeypadState extends State<BonjourKeypad> {
               margin: EdgeInsets.only(top: 20.0),
             ),
             Container(
-              child: RaisedButton(
-                child: Text(
-                  'Connect Keypad',
-                  style: TextStyle(color: Colors.white),
-                ),
-                color: Colors.blue,
-                onPressed: () {
-                  _saveKeypad();
+              child: StreamBuilder(
+                stream: _bloc.outLoading,
+                initialData: false,
+                builder: (context, snapshot) {
+                  if (snapshot.data == true) {
+                    return CircularProgressIndicator();
+                  } else {
+                    return Container();
+                  }
                 },
               ),
+              margin: EdgeInsets.only(top: 20),
+            ),
+            Container(
+              child: primaryButton('Connect Keypad', _saveKeypad),
               margin: EdgeInsets.only(top: 30.0),
               width: double.infinity,
             ),

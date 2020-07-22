@@ -21,10 +21,12 @@ class Delegate implements MDNSPluginDelegate {
   final AppBloc _bloc = BlocProvider.getBloc<AppBloc>();
 
   void onDiscoveryStarted() {
+    _bloc.setLoading(true);
     print("Discovery started");
   }
 
   void onDiscoveryStopped() {
+    _bloc.setLoading(false);
     print("Discovery stopped");
   }
 
@@ -37,7 +39,8 @@ class Delegate implements MDNSPluginDelegate {
     print("Resolved: $service");
 
     if (service.name.contains('DENON')) {
-      Receiver receiver = new Receiver(service.name, Platform.isIOS ? service.addresses[0] : service.hostName);
+      Receiver receiver = new Receiver(service.name,
+          Platform.isIOS ? service.addresses[0] : service.hostName);
       _bloc.setReceiver(receiver);
     }
 

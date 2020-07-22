@@ -16,10 +16,10 @@ class Keypad {
     return {
       'id': id,
       'name': name,
-      'keypadIp': keypadIp,
-      'receiverIp': receiverIp,
-      'keypadMdns': keypadMdns,
-      'receiverMdns': receiverMdns,
+      'keypad_ip': keypadIp,
+      'receiver_ip': receiverIp,
+      'keypad_mdns': keypadMdns,
+      'receiver_mdns': receiverMdns,
       'password': password,
       'ssid': ssid,
       'zones': zone
@@ -39,7 +39,7 @@ class Zones {
         ? this.buttons.map((button) => button.toJson()).toList()
         : null;
 
-    return {'zoneId': zoneId, 'name': name, 'buttons': buttons};
+    return {'zone_id': zoneId, 'name': name, 'buttons': buttons};
   }
 }
 
@@ -51,7 +51,7 @@ class Buttons {
   Buttons(this.buttonId, this.name, this.command);
 
   toJson() {
-    return {'buttonId': buttonId, 'name': name, 'command': command};
+    return {'button_id': buttonId, 'name': name, 'command': command};
   }
 }
 

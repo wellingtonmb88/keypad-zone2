@@ -22,6 +22,7 @@ class _ConfigScreenState extends State<ConfigScreen> {
   List<String> _buttonsName = new List(8);
   List<Commands> _commands = new List(8);
   Zones _zone;
+  String _originalZoneName = 'ZONE1';
 
   @override
   void initState() {
@@ -88,7 +89,7 @@ class _ConfigScreenState extends State<ConfigScreen> {
             button.value != null && button.value.trim().length > 0
                 ? button.value
                 : _bloc.buttons[button.key].name,
-            'MainZone/index.put.asp?${_commands[button.key].command}&ZoneName=ZONE1',
+            'MainZone/index.put.asp?${_commands[button.key].command}&ZoneName=$_originalZoneName',
           ));
         }).toList();
 
@@ -115,9 +116,17 @@ class _ConfigScreenState extends State<ConfigScreen> {
     }
 
     void _saveZone(Zones newZone) {
-      setState(() {
-        _zone = newZone;
-      });
+      if (newZone.name == 'MAIN') {
+        setState(() {
+          _zone = newZone;
+          _originalZoneName = 'ZONE1';
+        });
+      } else {
+        setState(() {
+          _zone = newZone;
+          _originalZoneName = newZone.name;
+        });
+      }
     }
 
     void _saveCommand(index, Commands command) {
@@ -189,14 +198,14 @@ class _ConfigScreenState extends State<ConfigScreen> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text('Config KeyPad'),
+          title: Text('Config Keypad'),
         ),
         body: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              title('KeyPad Name'),
+              title('Keypad Name'),
               Container(
-                child: textField('Enter KeyPad Name', _saveKeypadName),
+                child: textField('Enter Keypad Name', _saveKeypadName),
                 margin: EdgeInsets.only(top: 5.0, right: 20.0, left: 20.0),
               ),
               Divider(
@@ -212,7 +221,16 @@ class _ConfigScreenState extends State<ConfigScreen> {
                     ),
                     Container(
                       child: DropdownButtonHideUnderline(
-                        child: dropDown(_bloc.zones, _saveZone),
+                        child: DropdownButton(
+                          value: _zone,
+                          onChanged: (value) => _saveZone(value),
+                          items: _bloc.zones.map<DropdownMenuItem>((Zones zone) {
+                            return DropdownMenuItem(
+                              value: zone,
+                              child: Text(zone.name),
+                            );
+                          }).toList(),
+                        ),
                       ),
                       margin: EdgeInsets.only(left: 20.0),
                     )
@@ -238,7 +256,21 @@ class _ConfigScreenState extends State<ConfigScreen> {
                 height: 1,
               ),
               Container(
-                child: primaryButton(context, 'Save', _saveKeyPad),
+                child: StreamBuilder(
+                  stream: _bloc.outLoading,
+                  initialData: false,
+                  builder: (context, snapshot) {
+                    if (snapshot.data == true) {
+                      return CircularProgressIndicator();
+                    } else {
+                      return Container();
+                    }
+                  },
+                ),
+                margin: EdgeInsets.only(top: 20),
+              ),
+              Container(
+                child: primaryButton('Save', _saveKeyPad),
                 width: double.infinity,
                 margin: EdgeInsets.only(top: 20.0, right: 20.0, left: 20.0),
               )

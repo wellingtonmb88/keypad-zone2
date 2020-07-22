@@ -1,8 +1,7 @@
 import 'package:automation/models/keypad_model.dart';
 import 'package:automation/screens/edit/edit_screen.dart';
+import 'package:automation/widgets/secondaryButton.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-
 class KeypadScreen extends StatefulWidget {
   final Keypad keypad;
 
@@ -18,8 +17,10 @@ class _KeypadScreenState extends State<KeypadScreen> {
 
   @override
   Widget build(BuildContext context) {
-    double width = MediaQuery.of(context).size.width;
-    double height = MediaQuery.of(context).size.height;
+    double _width = MediaQuery.of(context).size.width;
+    double _height = MediaQuery.of(context).size.height;
+    Keypad _keypad = widget.keypad;
+    List<Buttons> _buttons = widget.keypad.zone.buttons;
 
     return Scaffold(
       appBar: AppBar(
@@ -37,34 +38,8 @@ class _KeypadScreenState extends State<KeypadScreen> {
               Container(
                 child: Row(
                   children: <Widget>[
-                    Container(
-                      child: RaisedButton(
-                        child: Text(
-                          widget.keypad.zone.buttons[0].name,
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        color: Colors.blue,
-                        onPressed: () async {
-                          await http.get(
-                              'http://${widget.keypad.receiverIp}/${widget.keypad.zone.buttons[0].command}');
-                        },
-                      ),
-                      width: width * 0.4,
-                    ),
-                    Container(
-                      child: RaisedButton(
-                        child: Text(
-                          widget.keypad.zone.buttons[1].name,
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        color: Colors.blue,
-                        onPressed: () async {
-                          await http.get(
-                              'http://${widget.keypad.receiverIp}/${widget.keypad.zone.buttons[1].command}');
-                        },
-                      ),
-                      width: width * 0.4,
-                    ),
+                    secondaryButton(_buttons[0].name, _keypad.receiverIp, _buttons[0].command, _width, context),
+                    secondaryButton(_buttons[1].name, _keypad.receiverIp, _buttons[1].command, _width, context),
                   ],
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 ),
@@ -72,34 +47,8 @@ class _KeypadScreenState extends State<KeypadScreen> {
               Container(
                 child: Row(
                   children: <Widget>[
-                    Container(
-                      child: RaisedButton(
-                        child: Text(
-                          widget.keypad.zone.buttons[2].name,
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        color: Colors.blue,
-                        onPressed: () async {
-                          await http.get(
-                              'http://${widget.keypad.receiverIp}/${widget.keypad.zone.buttons[2].command}');
-                        },
-                      ),
-                      width: width * 0.4,
-                    ),
-                    Container(
-                      child: RaisedButton(
-                        child: Text(
-                          widget.keypad.zone.buttons[3].name,
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        color: Colors.blue,
-                        onPressed: () async {
-                          await http.get(
-                              'http://${widget.keypad.receiverIp}/${widget.keypad.zone.buttons[3].command}');
-                        },
-                      ),
-                      width: width * 0.4,
-                    ),
+                    secondaryButton(_buttons[2].name, _keypad.receiverIp, _buttons[2].command, _width, context),
+                    secondaryButton(_buttons[3].name, _keypad.receiverIp, _buttons[3].command, _width, context),
                   ],
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 ),
@@ -108,34 +57,8 @@ class _KeypadScreenState extends State<KeypadScreen> {
               Container(
                 child: Row(
                   children: <Widget>[
-                    Container(
-                      child: RaisedButton(
-                        child: Text(
-                          widget.keypad.zone.buttons[4].name,
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        color: Colors.blue,
-                        onPressed: () async {
-                          await http.get(
-                              'http://${widget.keypad.receiverIp}/${widget.keypad.zone.buttons[4].command}');
-                        },
-                      ),
-                      width: width * 0.4,
-                    ),
-                    Container(
-                      child: RaisedButton(
-                        child: Text(
-                          widget.keypad.zone.buttons[5].name,
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        color: Colors.blue,
-                        onPressed: () async {
-                          await http.get(
-                              'http://${widget.keypad.receiverIp}/${widget.keypad.zone.buttons[5].command}');
-                        },
-                      ),
-                      width: width * 0.4,
-                    ),
+                    secondaryButton(_buttons[4].name, _keypad.receiverIp, _buttons[4].command, _width, context),
+                    secondaryButton(_buttons[5].name, _keypad.receiverIp, _buttons[5].command, _width, context),
                   ],
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 ),
@@ -144,34 +67,8 @@ class _KeypadScreenState extends State<KeypadScreen> {
               Container(
                 child: Row(
                   children: <Widget>[
-                    Container(
-                      child: RaisedButton(
-                        child: Text(
-                          widget.keypad.zone.buttons[6].name,
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        color: Colors.blue,
-                        onPressed: () async {
-                          await http.get(
-                              'http://${widget.keypad.receiverIp}/${widget.keypad.zone.buttons[6].command}');
-                        },
-                      ),
-                      width: width * 0.4,
-                    ),
-                    Container(
-                      child: RaisedButton(
-                        child: Text(
-                          widget.keypad.zone.buttons[7].name,
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        color: Colors.blue,
-                        onPressed: () async {
-                          await http.get(
-                              'http://${widget.keypad.receiverIp}/${widget.keypad.zone.buttons[7].command}');
-                        },
-                      ),
-                      width: width * 0.4,
-                    ),
+                    secondaryButton(_buttons[6].name, _keypad.receiverIp, _buttons[6].command, _width, context),
+                    secondaryButton(_buttons[7].name, _keypad.receiverIp, _buttons[7].command, _width, context),
                   ],
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 ),
@@ -179,7 +76,7 @@ class _KeypadScreenState extends State<KeypadScreen> {
               ),
             ],
           ),
-          margin: EdgeInsets.only(top: height * 0.2, right: 20, left: 20),
+          margin: EdgeInsets.only(top: _height * 0.2, right: 20, left: 20),
         ),
       ),
     );
