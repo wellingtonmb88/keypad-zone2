@@ -1,3 +1,4 @@
+import 'package:automation/internationalization/app_localizations.dart';
 import 'package:automation/models/keypad_model.dart';
 import 'package:automation/screens/config/config_screen.dart';
 import 'package:automation/screens/keypad/keypad_screen.dart';
@@ -34,7 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
         if (snapshot.data.length > 0) {
           return Scaffold(
             appBar: AppBar(
-              title: Text('Home Screen'),
+              title: Text(AppLocalizations.of(context).translate('title_home')),
               actions: <Widget>[
                 IconButton(
                   icon: Icon(
@@ -47,51 +48,57 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
-            body: Container(
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    child: Text(
-                      'Select a Keypad',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 25),
+            body: SingleChildScrollView(
+              child: Container(
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      child: Text(
+                        AppLocalizations.of(context).translate('select_keypad'),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 25),
+                      ),
                     ),
-                  ),
-                  Container(
-                    child: dropDown(snapshot.data, _goToKeypad),
-                  )
-                ],
+                    Container(
+                      child: dropDown(snapshot.data, _goToKeypad),
+                    )
+                  ],
+                ),
+                margin: EdgeInsets.only(top: 100),
+                alignment: Alignment.topCenter,
               ),
-              margin: EdgeInsets.only(top: 100),
-              alignment: Alignment.topCenter,
             ),
           );
         } else {
           return Scaffold(
             appBar: AppBar(
-              title: Text('Home Screen'),
+              title: Text(AppLocalizations.of(context).translate('title_home')),
             ),
-            body: Container(
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    child: Text('No Keypads added.'),
-                  ),
-                  Container(
-                    child: Text('Click the button below to add Keypads'),
-                  ),
-                  Container(
-                    child: ButtonTheme(
-                        minWidth: 150,
-                        child:
-                            primaryButton('Add KeyPad', _goToConfig)),
-                    width: double.infinity,
-                    margin: EdgeInsets.only(top: 40.0, right: 20.0, left: 20.0),
-                  ),
-                ],
+            body: SingleChildScrollView(
+              child: Container(
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      child: Text(AppLocalizations.of(context)
+                          .translate('keypads_home')),
+                    ),
+                    Container(
+                      child: Text(AppLocalizations.of(context)
+                          .translate('click_button_home')),
+                    ),
+                    Container(
+                      child: ButtonTheme(
+                          minWidth: 150,
+                          child: primaryButton('Add Keypad', _goToConfig)),
+                      width: double.infinity,
+                      margin:
+                          EdgeInsets.only(top: 40.0, right: 20.0, left: 20.0),
+                    ),
+                  ],
+                ),
+                margin: EdgeInsets.only(top: 100),
+                alignment: Alignment.topCenter,
               ),
-              margin: EdgeInsets.only(top: 100),
-              alignment: Alignment.topCenter,
             ),
           );
         }

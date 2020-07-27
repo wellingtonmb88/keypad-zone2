@@ -1,7 +1,7 @@
 import 'package:automation/bloc/app_bloc.dart';
+import 'package:automation/internationalization/app_localizations.dart';
 import 'package:automation/models/keypad_model.dart';
 import 'package:automation/screens/bonjour/bonjour_receiver_screen.dart';
-import 'package:automation/widgets/dropDown.dart';
 import 'package:automation/widgets/primaryButton.dart';
 import 'package:automation/widgets/textField.dart';
 import 'package:automation/widgets/title.dart';
@@ -46,8 +46,8 @@ class _ConfigScreenState extends State<ConfigScreen> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('KeyPads'),
-              content: Text('You must to edit the KeyPad name.'),
+              title: Text('Keypads'),
+              content: Text(AppLocalizations.of(context).translate('config_error')),
               actions: <Widget>[
                 FlatButton(
                   child: Text('OK.'),
@@ -65,9 +65,9 @@ class _ConfigScreenState extends State<ConfigScreen> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('KeyPads'),
+              title: Text('Keypads'),
               content:
-                  Text('Your Keypad was saved! Now connect to a Receiver.'),
+                  Text(AppLocalizations.of(context).translate('confirm_config')),
               actions: <Widget>[
                 FlatButton(
                   child: Text('OK'),
@@ -162,7 +162,9 @@ class _ConfigScreenState extends State<ConfigScreen> {
             Expanded(
               child: TextField(
                 decoration: InputDecoration(
-                    border: InputBorder.none, hintText: 'Enter Button Name'),
+                    border: InputBorder.none,
+                    hintText:
+                        AppLocalizations.of(context).translate('button_input')),
                 onChanged: (value) {
                   setState(() {
                     _buttonsName[button.key] = value;
@@ -203,28 +205,29 @@ class _ConfigScreenState extends State<ConfigScreen> {
         body: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              title('Keypad Name'),
+              title(AppLocalizations.of(context).translate('keypad_name')),
               Container(
-                child: textField('Enter Keypad Name', _saveKeypadName),
+                child: textField(AppLocalizations.of(context).translate('keypad_input'), _saveKeypadName),
                 margin: EdgeInsets.only(top: 5.0, right: 20.0, left: 20.0),
               ),
               Divider(
                 color: Colors.grey,
                 height: 1,
               ),
-              title('Zone Name'),
+              title(AppLocalizations.of(context).translate('zone_name')),
               Container(
                 child: Row(
                   children: <Widget>[
                     Expanded(
-                      child: textField('Enter Zone Name', _saveZoneName),
+                      child: textField(AppLocalizations.of(context).translate('zone_input'), _saveZoneName),
                     ),
                     Container(
                       child: DropdownButtonHideUnderline(
                         child: DropdownButton(
                           value: _zone,
                           onChanged: (value) => _saveZone(value),
-                          items: _bloc.zones.map<DropdownMenuItem>((Zones zone) {
+                          items:
+                              _bloc.zones.map<DropdownMenuItem>((Zones zone) {
                             return DropdownMenuItem(
                               value: zone,
                               child: Text(zone.name),
@@ -244,7 +247,7 @@ class _ConfigScreenState extends State<ConfigScreen> {
                 color: Colors.grey,
                 height: 1,
               ),
-              title('Buttons'),
+              title(AppLocalizations.of(context).translate('button_name')),
               Container(
                 child: Column(
                   children: renderButtons(),
@@ -270,7 +273,7 @@ class _ConfigScreenState extends State<ConfigScreen> {
                 margin: EdgeInsets.only(top: 20),
               ),
               Container(
-                child: primaryButton('Save', _saveKeyPad),
+                child: primaryButton(AppLocalizations.of(context).translate('save_config'), _saveKeyPad),
                 width: double.infinity,
                 margin: EdgeInsets.only(top: 20.0, right: 20.0, left: 20.0),
               )

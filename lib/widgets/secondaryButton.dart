@@ -1,3 +1,4 @@
+import 'package:automation/internationalization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -25,23 +26,23 @@ Future<void> _callReceiver(
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Error'),
+            title: Text(AppLocalizations.of(context).translate('error')),
             content: Container(
               child: Column(
                 children: <Widget>[
                   Container(
                     child: Text(
-                      'Ops! Something went wrong!',
+                      AppLocalizations.of(context).translate('something_wrong'),
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
                     margin: EdgeInsets.only(top: 5),
                   ),
                   Container(
-                    child: Text('Check your internet connection'),
+                    child: Text(AppLocalizations.of(context).translate('check_connection')),
                     margin: EdgeInsets.only(top: 10),
                   ),
-                  Text('and Keypad/Receiver IP.')
+                  Text(AppLocalizations.of(context).translate('check_ip'))
                 ],
                 mainAxisSize: MainAxisSize.min,
               ),

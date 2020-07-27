@@ -1,4 +1,5 @@
 import 'package:automation/bloc/app_bloc.dart';
+import 'package:automation/internationalization/app_localizations.dart';
 import 'package:automation/models/keypad_model.dart';
 import 'package:automation/screens/bonjour/bonjour_keypad_screen.dart';
 import 'package:automation/widgets/informationRow.dart';
@@ -39,8 +40,8 @@ class _EditScreenState extends State<EditScreen> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('KeyPads'),
-              content: Text('Your keypad was saved!'),
+              title: Text('Keypads'),
+              content: Text(AppLocalizations.of(context).translate('confirm_edit')),
               actions: <Widget>[
                 FlatButton(
                   child: Text('OK'),
@@ -112,17 +113,17 @@ class _EditScreenState extends State<EditScreen> {
             children: <Widget>[
               Container(
                 child: Text(
-                  'Physical Keypad Information',
+                  AppLocalizations.of(context).translate('keypad_information'),
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 margin: EdgeInsets.only(bottom: 20),
               ),
               Container(
-                  child: informationRow('Keypad IP:', widget.keypad.keypadIp),
+                  child: informationRow(AppLocalizations.of(context).translate('keypad_ip'), widget.keypad.keypadIp),
                   margin: EdgeInsets.only(bottom: 10.0)),
               Divider(color: Colors.grey, height: 1),
               Container(
-                  child: informationRow('MDns Name:', widget.keypad.keypadMdns),
+                  child: informationRow(AppLocalizations.of(context).translate('mdns_name'), widget.keypad.keypadMdns),
                   margin: EdgeInsets.only(top: 10.0, bottom: 10.0)),
               Divider(color: Colors.grey, height: 1),
               Container(
@@ -143,7 +144,7 @@ class _EditScreenState extends State<EditScreen> {
                               border: InputBorder.none,
                               hintText: this._ssid.trim().length > 0
                                   ? this._ssid
-                                  : 'Change SSID',
+                                  : AppLocalizations.of(context).translate('ssid'),
                               hintStyle: this._ssid.trim().length > 0
                                   ? TextStyle(color: Colors.black)
                                   : TextStyle()),
@@ -164,7 +165,7 @@ class _EditScreenState extends State<EditScreen> {
                 children: <Widget>[
                   Container(
                     child: Text(
-                      'Password:',
+                      AppLocalizations.of(context).translate('password'),
                       style:
                           TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                     ),
@@ -175,7 +176,7 @@ class _EditScreenState extends State<EditScreen> {
                       child: TextField(
                         decoration: InputDecoration(
                             border: InputBorder.none,
-                            hintText: 'Change Password'),
+                            hintText: AppLocalizations.of(context).translate('change_password')),
                         onChanged: (value) {
                           setState(() {
                             this._password = value;
@@ -189,19 +190,19 @@ class _EditScreenState extends State<EditScreen> {
               Divider(color: Colors.grey, height: 1),
               Container(
                 child: Text(
-                  'Receiver Information',
+                  AppLocalizations.of(context).translate('receiver_information'),
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 margin: EdgeInsets.only(top: 40),
               ),
               Container(
                   child:
-                      informationRow('Receiver IP:', widget.keypad.receiverIp),
+                      informationRow(AppLocalizations.of(context).translate('receiver_ip'), widget.keypad.receiverIp),
                   margin: EdgeInsets.only(top: 20.0, bottom: 10.0)),
               Divider(color: Colors.grey, height: 1),
               Container(
                   child:
-                      informationRow('MDns Name:', widget.keypad.receiverMdns),
+                      informationRow(AppLocalizations.of(context).translate('mdns_name'), widget.keypad.receiverMdns),
                   margin: EdgeInsets.only(top: 10.0, bottom: 10.0)),
               Divider(color: Colors.grey, height: 1),
               Container(
@@ -219,7 +220,7 @@ class _EditScreenState extends State<EditScreen> {
                 margin: EdgeInsets.only(top: 20),
               ),
               Container(
-                child: primaryButton('Save Changes', _cryptoPassword),
+                child: primaryButton(AppLocalizations.of(context).translate('save_edit'), _cryptoPassword),
                 width: double.infinity,
                 margin: EdgeInsets.only(top: 50.0),
               ),
@@ -227,12 +228,13 @@ class _EditScreenState extends State<EditScreen> {
                 child: widget.keypad.keypadIp.trim().length > 0
                     ? Container()
                     : Text(
-                        'This Keypad has not yet been configured on a real Keypad. '
-                        'Click the button below to configure.'),
+                      '${AppLocalizations.of(context).translate('real_keypad')} '
+                      '${AppLocalizations.of(context).translate('click_button_edit')}'
+                    ),
                 margin: EdgeInsets.only(top: 50.0),
               ),
               Container(
-                child: primaryButton('Send Keypad', _goToBonjour),
+                child: primaryButton(AppLocalizations.of(context).translate('send_keypad'), _goToBonjour),
                 width: double.infinity,
                 margin: EdgeInsets.only(top: 20.0),
               )
