@@ -1,13 +1,13 @@
 class Keypad {
-  final int id;
-  final String name;
-  final String keypadIp;
-  final String receiverIp;
-  final String keypadMdns;
-  final String receiverMdns;
-  final String password;
-  final String ssid;
-  final Zones zone;
+  int id;
+  String name;
+  String password;
+  String ssid;
+  Zones zone;
+  String keypadIp;
+  String receiverIp;
+  String keypadMdns;
+  String receiverMdns;
 
   Keypad(this.id, this.name, this.keypadIp, this.receiverIp, this.keypadMdns,
       this.receiverMdns, this.password, this.ssid, this.zone);

@@ -12,7 +12,7 @@
     "save_config": "Salvar",
     "config_error": "Você deve editar o nome do Keypad.",
     "confirm_config": "Seu Keypad foi salvo. Agora conecte-se a um Receiver.",
-    "confirm_receiver": "Seu Keypad foi conectado a um Receiver. Você quer enviar essa configuração para um Keypad real?",
+    "confirm_receiver": "Seu Keypad foi conectado a um Receiver. Você quer enviar essa configuração para um Keypad físico?",
     "error_receiver": "Você deve selecionar um Receiver.",
     "not_now": "Agora não.",
     "yes": "Sim!",

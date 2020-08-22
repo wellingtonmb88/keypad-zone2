@@ -11,6 +11,8 @@ import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import 'bonjour_receiver_screen.dart';
+
 class BonjourKeypad extends StatefulWidget {
   final Keypad keypad;
   final int id;
@@ -37,48 +39,79 @@ class _BonjourKeypadState extends State<BonjourKeypad> {
   Widget build(BuildContext context) {
     final AppBloc _bloc = BlocProvider.getBloc<AppBloc>();
 
+    void _errorAlert() {
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text(AppLocalizations.of(context).translate('error')),
+              content: Container(
+                child: Column(
+                  children: <Widget>[
+                    Container(
+                      child: Text(
+                        AppLocalizations.of(context)
+                            .translate('something_wrong'),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      margin: EdgeInsets.only(top: 5),
+                    ),
+                    Container(
+                      child: Text(AppLocalizations.of(context)
+                          .translate('check_connection')),
+                      margin: EdgeInsets.only(top: 10),
+                    ),
+                    Text(AppLocalizations.of(context).translate('check_ip'))
+                  ],
+                  mainAxisSize: MainAxisSize.min,
+                ),
+              ),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text('OK'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          });
+    }
+
+    String commandsJson(Keypad keypad) {
+      final receiverIp = keypad.receiverIp;
+      final json = {
+        "receiver_ip": receiverIp,
+        "command_button_1": 'http://$receiverIp/${keypad.zone.buttons[0].command}',
+        "command_button_2": 'http://$receiverIp/${keypad.zone.buttons[1].command}',
+        "command_button_3": 'http://$receiverIp/${keypad.zone.buttons[2].command}',
+        "command_button_4": 'http://$receiverIp/${keypad.zone.buttons[3].command}',
+        "command_button_5": 'http://$receiverIp/${keypad.zone.buttons[4].command}',
+        "command_button_6": 'http://$receiverIp/${keypad.zone.buttons[5].command}',
+        "command_button_7": 'http://$receiverIp/${keypad.zone.buttons[6].command}',
+        "command_button_8": 'http://$receiverIp/${keypad.zone.buttons[7].command}'
+      };
+      return jsonEncode(json);
+    }
+
     Future<void> _sendToKeyPad(Keypad keypad) async {
       try {
-        await http.post('http://${keypad.keypadIp}/save/config',
-            body: jsonEncode(keypad));
+        final body = commandsJson(keypad);
+        print(body);
+        final response = await http.post('http://${keypad.keypadIp}/commands',
+            body: body);
+        print("kaokaoka");
+        print(response.statusCode);
+        print(response.body);
+        if (response.statusCode == 404) {
+          _errorAlert();
+        } else {
+          _bloc.changeKeypad(keypad);
+        }
       } catch (e) {
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return AlertDialog(
-                title: Text(AppLocalizations.of(context).translate('error')),
-                content: Container(
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        child: Text(
-                          AppLocalizations.of(context)
-                              .translate('something_wrong'),
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
-                        ),
-                        margin: EdgeInsets.only(top: 5),
-                      ),
-                      Container(
-                        child: Text(AppLocalizations.of(context)
-                            .translate('check_connection')),
-                        margin: EdgeInsets.only(top: 10),
-                      ),
-                      Text(AppLocalizations.of(context).translate('check_ip'))
-                    ],
-                    mainAxisSize: MainAxisSize.min,
-                  ),
-                ),
-                actions: <Widget>[
-                  FlatButton(
-                    child: Text('OK'),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                  ),
-                ],
-              );
-            });
+        print(e);
+        _errorAlert();
       }
     }
 
@@ -91,27 +124,10 @@ class _BonjourKeypadState extends State<BonjourKeypad> {
 
     void _saveKeypad() {
       Keypad keypad = widget.keypad;
-      Keypad newKeypad = new Keypad(
-          keypad.id == 0 ? widget.id : keypad.id,
-          keypad.name,
-          _keypadIp,
-          keypad.receiverIp,
-          _keypadMdns,
-          keypad.receiverMdns,
-          keypad.password,
-          keypad.ssid,
-          new Zones(
-              keypad.zone.zoneId,
-              keypad.zone.name,
-              List.generate(keypad.zone.buttons.length, (index) {
-                return Buttons(
-                    keypad.zone.buttons[index].buttonId,
-                    keypad.zone.buttons[index].name,
-                    keypad.zone.buttons[index].command);
-              })));
-
-      _bloc.changeKeypad(newKeypad);
-      _sendToKeyPad(newKeypad);
+      keypad.keypadIp = _keypadIp;
+      keypad.keypadMdns = _keypadMdns;
+      print(keypad.toJson());
+      _sendToKeyPad(keypad);
     }
 
     return Scaffold(

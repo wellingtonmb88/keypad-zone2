@@ -62,6 +62,7 @@ class _ConfigScreenState extends State<ConfigScreen> {
 
     void _shouldGoToBonjour(Keypad keypad, int id) {
       showDialog(
+          barrierDismissible: false,
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
@@ -109,6 +110,7 @@ class _ConfigScreenState extends State<ConfigScreen> {
                     : _zone.name,
                 buttons));
         int id = await _bloc.addKeyPad(newKeypad);
+        newKeypad.id = id;
         _shouldGoToBonjour(newKeypad, id);
       } else {
         _errorAlert();

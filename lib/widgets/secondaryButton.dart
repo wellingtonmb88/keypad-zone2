@@ -2,8 +2,8 @@ import 'package:automation/internationalization/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-Container secondaryButton(String text, String ip, String command, double width,
-    BuildContext context) {
+Container secondaryButton(bool disable, String text, String ip, String command,
+    double width, BuildContext context) {
   return Container(
     child: RaisedButton(
       child: Text(
@@ -11,7 +11,7 @@ Container secondaryButton(String text, String ip, String command, double width,
         style: TextStyle(color: Colors.white),
       ),
       color: Colors.blue,
-      onPressed: () => _callReceiver(context, ip, command),
+      onPressed: disable ? null : () => _callReceiver(context, ip, command),
     ),
     width: width * 0.4,
   );
@@ -39,7 +39,8 @@ Future<void> _callReceiver(
                     margin: EdgeInsets.only(top: 5),
                   ),
                   Container(
-                    child: Text(AppLocalizations.of(context).translate('check_connection')),
+                    child: Text(AppLocalizations.of(context)
+                        .translate('check_connection')),
                     margin: EdgeInsets.only(top: 10),
                   ),
                   Text(AppLocalizations.of(context).translate('check_ip'))

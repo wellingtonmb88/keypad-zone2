@@ -47,80 +47,31 @@ class _BonjourReceiverState extends State<BonjourReceiver> {
       });
     }
 
-    void _saveKeypad(bool goToBonjour) {
-      Keypad keypad = widget.keypad;
-      Keypad newKeypad = new Keypad(
-          keypad.id == 0 ? widget.id : keypad.id,
-          keypad.name,
-          keypad.keypadIp,
-          _receiverIp,
-          keypad.keypadMdns,
-          _receiverMdns,
-          keypad.password,
-          keypad.ssid,
-          new Zones(
-              keypad.zone.zoneId,
-              keypad.zone.name,
-              List.generate(keypad.zone.buttons.length, (index) {
-                return Buttons(
-                    keypad.zone.buttons[index].buttonId,
-                    keypad.zone.buttons[index].name,
-                    keypad.zone.buttons[index].command);
-              })));
-
-      _bloc.changeKeypad(newKeypad);
-
-      if (goToBonjour) {
-        _goToBonjour(newKeypad, widget.id);
-      }
-    }
-
-    void _showConfirmMessage() {
-      if (_receiverIp.trim().length > 0) {
+    void _saveKeypad() {
+      if (_receiverIp.trim().length < 1) {
         showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Keypads'),
-              content: Text(
-                  AppLocalizations.of(context).translate('confirm_receiver')),
-              actions: <Widget>[
-                FlatButton(
-                  child:
-                      Text(AppLocalizations.of(context).translate('not_now')),
-                  onPressed: () {
-                    _saveKeypad(false);
-                    Navigator.of(context).popUntil((route) => route.isFirst);
-                  },
-                ),
-                FlatButton(
-                  child: Text(AppLocalizations.of(context).translate('yes')),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                    _saveKeypad(true);
-                  },
-                ),
-              ],
-            );
-          });
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Keypads'),
+                content: Text(
+                    AppLocalizations.of(context).translate('error_receiver')),
+                actions: <Widget>[
+                  FlatButton(
+                    child: Text('OK'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            });
       } else {
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Keypads'),
-              content: Text(
-                  AppLocalizations.of(context).translate('error_receiver')),
-              actions: <Widget>[
-                FlatButton(
-                  child: Text('OK'),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                ),
-              ],
-            );
-          });
+        Keypad keypad = widget.keypad;
+        keypad.receiverIp = _receiverIp;
+        keypad.receiverMdns = _receiverMdns;
+        _bloc.changeKeypad(keypad);
+        _goToBonjour(keypad, keypad.id);
       }
     }
 
@@ -197,7 +148,7 @@ class _BonjourReceiverState extends State<BonjourReceiver> {
               Container(
                 child: primaryButton(
                     AppLocalizations.of(context).translate('title_bonjour'),
-                    _showConfirmMessage),
+                    _saveKeypad),
                 margin: EdgeInsets.only(top: 30.0),
                 width: double.infinity,
               ),

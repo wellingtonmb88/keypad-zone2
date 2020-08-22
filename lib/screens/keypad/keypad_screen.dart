@@ -13,6 +13,40 @@ class KeypadScreen extends StatefulWidget {
 }
 
 class _KeypadScreenState extends State<KeypadScreen> {
+  bool _isButtonDisabled = true;
+
+  @override
+  void initState() {
+    super.initState();
+    final keypadIp = widget.keypad.keypadIp.trim();
+    final keypadMdns = widget.keypad.keypadMdns.trim();
+    if (keypadIp.length > 5 && keypadMdns.length > 3) {
+      _isButtonDisabled = false;
+    } else {
+      Future.delayed(Duration.zero, () => _showErrorMessage());
+    }
+  }
+
+  void _showErrorMessage() {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Keypad not configured'),
+            content: Text(
+                'You need to have a configured Keypad device. Go to settings and finish your setup.'),
+            actions: <Widget>[
+              FlatButton(
+                child: Text('OK'),
+                onPressed: () {
+                  Navigator.of(context, rootNavigator: true).pop();
+                },
+              ),
+            ],
+          );
+        });
+  }
+
   void _goToEdit(Keypad keypad) => Navigator.push(
       context, MaterialPageRoute(builder: (context) => EditScreen(keypad)));
 
@@ -40,10 +74,20 @@ class _KeypadScreenState extends State<KeypadScreen> {
                 Container(
                   child: Row(
                     children: <Widget>[
-                      secondaryButton(_buttons[0].name, _keypad.receiverIp,
-                          _buttons[0].command, _width, context),
-                      secondaryButton(_buttons[1].name, _keypad.receiverIp,
-                          _buttons[1].command, _width, context),
+                      secondaryButton(
+                          _isButtonDisabled,
+                          _buttons[0].name,
+                          _keypad.receiverIp,
+                          _buttons[0].command,
+                          _width,
+                          context),
+                      secondaryButton(
+                          _isButtonDisabled,
+                          _buttons[1].name,
+                          _keypad.receiverIp,
+                          _buttons[1].command,
+                          _width,
+                          context),
                     ],
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   ),
@@ -51,10 +95,20 @@ class _KeypadScreenState extends State<KeypadScreen> {
                 Container(
                   child: Row(
                     children: <Widget>[
-                      secondaryButton(_buttons[2].name, _keypad.receiverIp,
-                          _buttons[2].command, _width, context),
-                      secondaryButton(_buttons[3].name, _keypad.receiverIp,
-                          _buttons[3].command, _width, context),
+                      secondaryButton(
+                          _isButtonDisabled,
+                          _buttons[2].name,
+                          _keypad.receiverIp,
+                          _buttons[2].command,
+                          _width,
+                          context),
+                      secondaryButton(
+                          _isButtonDisabled,
+                          _buttons[3].name,
+                          _keypad.receiverIp,
+                          _buttons[3].command,
+                          _width,
+                          context),
                     ],
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   ),
@@ -63,10 +117,20 @@ class _KeypadScreenState extends State<KeypadScreen> {
                 Container(
                   child: Row(
                     children: <Widget>[
-                      secondaryButton(_buttons[4].name, _keypad.receiverIp,
-                          _buttons[4].command, _width, context),
-                      secondaryButton(_buttons[5].name, _keypad.receiverIp,
-                          _buttons[5].command, _width, context),
+                      secondaryButton(
+                          _isButtonDisabled,
+                          _buttons[4].name,
+                          _keypad.receiverIp,
+                          _buttons[4].command,
+                          _width,
+                          context),
+                      secondaryButton(
+                          _isButtonDisabled,
+                          _buttons[5].name,
+                          _keypad.receiverIp,
+                          _buttons[5].command,
+                          _width,
+                          context),
                     ],
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   ),
@@ -75,10 +139,20 @@ class _KeypadScreenState extends State<KeypadScreen> {
                 Container(
                   child: Row(
                     children: <Widget>[
-                      secondaryButton(_buttons[6].name, _keypad.receiverIp,
-                          _buttons[6].command, _width, context),
-                      secondaryButton(_buttons[7].name, _keypad.receiverIp,
-                          _buttons[7].command, _width, context),
+                      secondaryButton(
+                          _isButtonDisabled,
+                          _buttons[6].name,
+                          _keypad.receiverIp,
+                          _buttons[6].command,
+                          _width,
+                          context),
+                      secondaryButton(
+                          _isButtonDisabled,
+                          _buttons[7].name,
+                          _keypad.receiverIp,
+                          _buttons[7].command,
+                          _width,
+                          context),
                     ],
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   ),
