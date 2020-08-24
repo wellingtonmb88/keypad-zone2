@@ -89,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Container(
                       child: ButtonTheme(
                           minWidth: 150,
-                          child: primaryButton('Add Keypad', _goToConfig)),
+                          child: primaryButton('Add Keypad', _goToConfig, false)),
                       width: double.infinity,
                       margin:
                           EdgeInsets.only(top: 40.0, right: 20.0, left: 20.0),

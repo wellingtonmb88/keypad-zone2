@@ -9,7 +9,9 @@ import 'package:bloc_pattern/bloc_pattern.dart';
 import 'package:flutter/material.dart';
 
 class ConfigScreen extends StatefulWidget {
-  ConfigScreen();
+  final Keypad keypad;
+
+  ConfigScreen([this.keypad]);
 
   @override
   _ConfigScreenState createState() => _ConfigScreenState();
@@ -27,6 +29,14 @@ class _ConfigScreenState extends State<ConfigScreen> {
   @override
   void initState() {
     super.initState();
+
+    if (widget.keypad != null) {
+      _keypad = widget.keypad.name;
+      _zoneName = widget.keypad.zone.name;
+      for (var index = 0; index < 8; index++) {
+        _buttonsName[index] = widget.keypad.zone.buttons[index].name;
+      }
+    }
 
     _zone = _bloc.zones[0];
     for (var index = 0; index < 8; index++) {
@@ -47,7 +57,8 @@ class _ConfigScreenState extends State<ConfigScreen> {
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text('Keypads'),
-              content: Text(AppLocalizations.of(context).translate('config_error')),
+              content:
+                  Text(AppLocalizations.of(context).translate('config_error')),
               actions: <Widget>[
                 FlatButton(
                   child: Text('OK.'),
@@ -61,24 +72,51 @@ class _ConfigScreenState extends State<ConfigScreen> {
     }
 
     void _shouldGoToBonjour(Keypad keypad, int id) {
-      showDialog(
-          barrierDismissible: false,
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Keypads'),
-              content:
-                  Text(AppLocalizations.of(context).translate('confirm_config')),
-              actions: <Widget>[
-                FlatButton(
-                  child: Text('OK'),
-                  onPressed: () {
-                    _goToBonjour(keypad, id);
-                  },
-                ),
-              ],
-            );
-          });
+      if (widget.keypad != null) {
+        showDialog(
+            barrierDismissible: false,
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Keypads'),
+                content: Text(
+                    AppLocalizations.of(context).translate('change_keypad')),
+                actions: <Widget>[
+                  FlatButton(
+                    child: Text(AppLocalizations.of(context).translate('yes')),
+                    onPressed: () {
+                      _goToBonjour(keypad, id);
+                    },
+                  ),
+                  FlatButton(
+                    child: Text(AppLocalizations.of(context).translate('not_now')),
+                    onPressed: () {
+                      Navigator.of(context).popUntil((route) => route.isFirst);
+                    },
+                  ),
+                ],
+              );
+            });
+      } else {
+        showDialog(
+            barrierDismissible: false,
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Keypads'),
+                content: Text(
+                    AppLocalizations.of(context).translate('confirm_config')),
+                actions: <Widget>[
+                  FlatButton(
+                    child: Text('OK'),
+                    onPressed: () {
+                      _goToBonjour(keypad, id);
+                    },
+                  ),
+                ],
+              );
+            });
+      }
     }
 
     Future<void> _saveKeyPad() async {
@@ -101,17 +139,26 @@ class _ConfigScreenState extends State<ConfigScreen> {
             '',
             '',
             '',
-            '',
-            '',
             new Zones(
                 _zone.zoneId,
                 _zoneName != null && _zoneName.trim().length > 0
                     ? _zoneName
                     : _zone.name,
                 buttons));
-        int id = await _bloc.addKeyPad(newKeypad);
-        newKeypad.id = id;
-        _shouldGoToBonjour(newKeypad, id);
+
+        if (widget.keypad != null) {
+          newKeypad.id = widget.keypad.id;
+          newKeypad.keypadIp = widget.keypad.keypadIp;
+          newKeypad.receiverIp = widget.keypad.receiverIp;
+          newKeypad.keypadMdns = widget.keypad.keypadMdns;
+          newKeypad.receiverMdns = widget.keypad.receiverMdns;
+          _bloc.changeKeypad(newKeypad);
+          _shouldGoToBonjour(newKeypad, newKeypad.id);
+        } else {
+          int id = await _bloc.addKeyPad(newKeypad);
+          newKeypad.id = id;
+          _shouldGoToBonjour(newKeypad, id);
+        }
       } else {
         _errorAlert();
       }
@@ -165,8 +212,10 @@ class _ConfigScreenState extends State<ConfigScreen> {
               child: TextField(
                 decoration: InputDecoration(
                     border: InputBorder.none,
-                    hintText:
-                        AppLocalizations.of(context).translate('button_input')),
+                    hintText: widget.keypad != null
+                        ? _buttonsName[button.key]
+                        : AppLocalizations.of(context)
+                            .translate('button_input')),
                 onChanged: (value) {
                   setState(() {
                     _buttonsName[button.key] = value;
@@ -209,7 +258,12 @@ class _ConfigScreenState extends State<ConfigScreen> {
             children: <Widget>[
               title(AppLocalizations.of(context).translate('keypad_name')),
               Container(
-                child: textField(AppLocalizations.of(context).translate('keypad_input'), _saveKeypadName),
+                child: textField(
+                    widget.keypad != null
+                        ? _keypad
+                        : AppLocalizations.of(context)
+                            .translate('keypad_input'),
+                    _saveKeypadName),
                 margin: EdgeInsets.only(top: 5.0, right: 20.0, left: 20.0),
               ),
               Divider(
@@ -221,7 +275,12 @@ class _ConfigScreenState extends State<ConfigScreen> {
                 child: Row(
                   children: <Widget>[
                     Expanded(
-                      child: textField(AppLocalizations.of(context).translate('zone_input'), _saveZoneName),
+                      child: textField(
+                          widget.keypad != null
+                              ? _zoneName
+                              : AppLocalizations.of(context)
+                                  .translate('zone_input'),
+                          _saveZoneName),
                     ),
                     Container(
                       child: DropdownButtonHideUnderline(
@@ -275,7 +334,10 @@ class _ConfigScreenState extends State<ConfigScreen> {
                 margin: EdgeInsets.only(top: 20),
               ),
               Container(
-                child: primaryButton(AppLocalizations.of(context).translate('save_config'), _saveKeyPad),
+                child: primaryButton(
+                    AppLocalizations.of(context).translate('save_config'),
+                    _saveKeyPad,
+                    false),
                 width: double.infinity,
                 margin: EdgeInsets.only(top: 20.0, right: 20.0, left: 20.0),
               )

@@ -147,8 +147,9 @@ class _BonjourReceiverState extends State<BonjourReceiver> {
               ),
               Container(
                 child: primaryButton(
-                    AppLocalizations.of(context).translate('title_bonjour'),
-                    _saveKeypad),
+                    AppLocalizations.of(context).translate('search_keypad'),
+                    _saveKeypad,
+                    false),
                 margin: EdgeInsets.only(top: 30.0),
                 width: double.infinity,
               ),

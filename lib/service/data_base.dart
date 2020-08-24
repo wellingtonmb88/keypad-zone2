@@ -41,8 +41,6 @@ Future<List<Keypad>> getKeypads() async {
           newKeypad['receiver_ip'],
           newKeypad['keypad_mdns'],
           newKeypad['receiver_mdns'],
-          newKeypad['password'],
-          newKeypad['ssid'],
           Zones(
               newKeypad['zones']['zone_id'],
               newKeypad['zones']['name'],
@@ -78,7 +76,7 @@ void updateKeypad(List<int> keypad, int id) async {
   dataBase.close();
 }
 
-Future<void> delete() async {
+Future<void> delete(int id) async {
   Database db = await _createConnection();
-  await db.delete('Keypad', where: 'id > 0');
+  await db.delete('Keypad', where: 'id = $id');
 }

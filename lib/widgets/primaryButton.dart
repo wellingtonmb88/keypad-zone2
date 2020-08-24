@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-RaisedButton primaryButton(text, Function function) {
+RaisedButton primaryButton(text, Function function, bool disable) {
   return RaisedButton(
-    onPressed: () => function(),
+    onPressed: disable ? null : () => function(),
     child: Text(
       text,
       style: TextStyle(color: Colors.white),

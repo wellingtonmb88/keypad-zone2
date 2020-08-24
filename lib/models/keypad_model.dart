@@ -1,8 +1,6 @@
 class Keypad {
   int id;
   String name;
-  String password;
-  String ssid;
   Zones zone;
   String keypadIp;
   String receiverIp;
@@ -10,7 +8,7 @@ class Keypad {
   String receiverMdns;
 
   Keypad(this.id, this.name, this.keypadIp, this.receiverIp, this.keypadMdns,
-      this.receiverMdns, this.password, this.ssid, this.zone);
+      this.receiverMdns, this.zone);
 
   Map<String, dynamic> toJson() {
     return {
@@ -20,8 +18,6 @@ class Keypad {
       'receiver_ip': receiverIp,
       'keypad_mdns': keypadMdns,
       'receiver_mdns': receiverMdns,
-      'password': password,
-      'ssid': ssid,
       'zones': zone
     };
   }

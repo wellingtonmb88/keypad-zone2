@@ -69,7 +69,6 @@ class AppBloc {
   }
 
   void fetchKeypads() async {
-    // await delete();
     List<Keypad> keypads = await getKeypads();
     keypads.map((keypad) => _keypads.add(keypad)).toList();
     inKeypads.add(_keypads);
@@ -101,6 +100,12 @@ class AppBloc {
 
     loading = false;
     inLoading.add(loading);
+  }
+
+  void deleteKeypad(int id) async {
+    await delete(id);
+    _keypads = [];
+    fetchKeypads();
   }
 
   void setReceiver(Receiver receiver) {

@@ -1,7 +1,11 @@
 import 'package:automation/models/keypad_model.dart';
 import 'package:automation/screens/edit/edit_screen.dart';
+import 'package:automation/screens/config/config_screen.dart';
 import 'package:automation/widgets/secondaryButton.dart';
 import 'package:flutter/material.dart';
+
+import '../../internationalization/app_localizations.dart';
+import '../config/config_screen.dart';
 
 class KeypadScreen extends StatefulWidget {
   final Keypad keypad;
@@ -32,9 +36,8 @@ class _KeypadScreenState extends State<KeypadScreen> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            title: Text('Keypad not configured'),
-            content: Text(
-                'You need to have a configured Keypad device. Go to settings and finish your setup.'),
+            title: Text(AppLocalizations.of(context).translate('not_configured_title')),
+            content: Text(AppLocalizations.of(context).translate('not_configured_message')),
             actions: <Widget>[
               FlatButton(
                 child: Text('OK'),
@@ -49,6 +52,9 @@ class _KeypadScreenState extends State<KeypadScreen> {
 
   void _goToEdit(Keypad keypad) => Navigator.push(
       context, MaterialPageRoute(builder: (context) => EditScreen(keypad)));
+
+  void _goToConfig(Keypad keypad) => Navigator.push(
+      context, MaterialPageRoute(builder: (context) => ConfigScreen(keypad)));
 
   @override
   Widget build(BuildContext context) {
@@ -157,6 +163,17 @@ class _KeypadScreenState extends State<KeypadScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   ),
                   margin: EdgeInsets.only(top: 30),
+                ),
+                Container(
+                  child: RaisedButton(
+                    child: Text(
+                      "Editar Keypad",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    color: Colors.blue,
+                    onPressed: () => _goToConfig(widget.keypad),
+                  ),
+                  margin: EdgeInsets.only(top: 50),
                 ),
               ],
             ),

@@ -16,8 +16,9 @@ import 'bonjour_receiver_screen.dart';
 class BonjourKeypad extends StatefulWidget {
   final Keypad keypad;
   final int id;
+  final bool editing;
 
-  BonjourKeypad(this.keypad, this.id);
+  BonjourKeypad(this.keypad, this.id, [this.editing = false]);
 
   @override
   _BonjourKeypadState createState() => _BonjourKeypadState();
@@ -83,33 +84,40 @@ class _BonjourKeypadState extends State<BonjourKeypad> {
       final receiverIp = keypad.receiverIp;
       final json = {
         "receiver_ip": receiverIp,
-        "command_button_1": 'http://$receiverIp/${keypad.zone.buttons[0].command}',
-        "command_button_2": 'http://$receiverIp/${keypad.zone.buttons[1].command}',
-        "command_button_3": 'http://$receiverIp/${keypad.zone.buttons[2].command}',
-        "command_button_4": 'http://$receiverIp/${keypad.zone.buttons[3].command}',
-        "command_button_5": 'http://$receiverIp/${keypad.zone.buttons[4].command}',
-        "command_button_6": 'http://$receiverIp/${keypad.zone.buttons[5].command}',
-        "command_button_7": 'http://$receiverIp/${keypad.zone.buttons[6].command}',
-        "command_button_8": 'http://$receiverIp/${keypad.zone.buttons[7].command}'
+        "command_button_1":
+            'http://$receiverIp/${keypad.zone.buttons[0].command}',
+        "command_button_2":
+            'http://$receiverIp/${keypad.zone.buttons[1].command}',
+        "command_button_3":
+            'http://$receiverIp/${keypad.zone.buttons[2].command}',
+        "command_button_4":
+            'http://$receiverIp/${keypad.zone.buttons[3].command}',
+        "command_button_5":
+            'http://$receiverIp/${keypad.zone.buttons[4].command}',
+        "command_button_6":
+            'http://$receiverIp/${keypad.zone.buttons[5].command}',
+        "command_button_7":
+            'http://$receiverIp/${keypad.zone.buttons[6].command}',
+        "command_button_8":
+            'http://$receiverIp/${keypad.zone.buttons[7].command}'
       };
       return jsonEncode(json);
     }
 
     Future<void> _sendToKeyPad(Keypad keypad) async {
+      _bloc.setLoading(true);
       try {
         final body = commandsJson(keypad);
-        print(body);
-        final response = await http.post('http://${keypad.keypadIp}/commands',
-            body: body);
-        print("kaokaoka");
-        print(response.statusCode);
-        print(response.body);
-        if (response.statusCode == 404) {
-          _errorAlert();
-        } else {
+        final response =
+            await http.post('http://${keypad.keypadIp}/commands', body: body);
+        _bloc.setLoading(false);
+        if (response.statusCode == 200) {
           _bloc.changeKeypad(keypad);
+        } else {
+          _errorAlert();
         }
       } catch (e) {
+        _bloc.setLoading(false);
         print(e);
         _errorAlert();
       }
@@ -126,7 +134,6 @@ class _BonjourKeypadState extends State<BonjourKeypad> {
       Keypad keypad = widget.keypad;
       keypad.keypadIp = _keypadIp;
       keypad.keypadMdns = _keypadMdns;
-      print(keypad.toJson());
       _sendToKeyPad(keypad);
     }
 
@@ -136,7 +143,11 @@ class _BonjourKeypadState extends State<BonjourKeypad> {
           leading: new IconButton(
             icon: new Icon(Icons.arrow_back),
             onPressed: () {
-              Navigator.of(context).popUntil((route) => route.isFirst);
+              if (widget.editing) {
+                Navigator.of(context).pop();
+              } else {
+                Navigator.of(context).popUntil((route) => route.isFirst);
+              }
             },
           ),
         ),
@@ -187,6 +198,14 @@ class _BonjourKeypadState extends State<BonjourKeypad> {
                   margin: EdgeInsets.only(top: 20.0),
                 ),
                 Container(
+                  child: primaryButton(
+                      AppLocalizations.of(context).translate('title_bonjour'),
+                      _saveKeypad,
+                      false),
+                  margin: EdgeInsets.only(top: 30.0),
+                  width: double.infinity,
+                ),
+                Container(
                   child: StreamBuilder(
                     stream: _bloc.outLoading,
                     initialData: false,
@@ -199,13 +218,6 @@ class _BonjourKeypadState extends State<BonjourKeypad> {
                     },
                   ),
                   margin: EdgeInsets.only(top: 20),
-                ),
-                Container(
-                  child: primaryButton(
-                      AppLocalizations.of(context).translate('title_bonjour'),
-                      _saveKeypad),
-                  margin: EdgeInsets.only(top: 30.0),
-                  width: double.infinity,
                 ),
               ],
             ),
